@@ -5,16 +5,15 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { format, startOfDay } from 'date-fns';
 import { getWaterIntakeData, saveWaterIntakeData } from '@/lib/storage';
 import type { WaterIntakeRecord, DrinkEntry } from '@/types';
-import { getTotalIntake } from '@/types'; // getTotalIntake is fine
+// getTotalIntake is fine, no longer need DRINK_TYPES here directly
 import { CalendarView } from './CalendarView';
 import { DailyIntakeDisplay } from './DailyIntakeDisplay';
 import { WaterIntakeInput } from './WaterIntakeInput';
 import { DrinkLogTable } from './DrinkLogTable';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { useToast } from '@/hooks/use-toast';
-import { CalendarDays, Droplet, PlusCircle, BellRing, SlidersHorizontal, BarChart3 } from 'lucide-react';
+// Removed Label, Switch, useToast, BellRing, SlidersHorizontal as they are moved or not used
+import { CalendarDays, Droplet, PlusCircle, BarChart3 } from 'lucide-react';
+
 
 const DEFAULT_DAILY_GOAL_ML = 2000;
 
@@ -22,14 +21,11 @@ export function WaterLog() {
   const [records, setRecords] = useState<WaterIntakeRecord[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(startOfDay(new Date()));
   const [isClient, setIsClient] = useState(false);
-  const [remindersEnabled, setRemindersEnabled] = useState(false);
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'default'>('default');
-  const { toast } = useToast();
+  // Reminder state and notification permission state are now managed in HomePage
 
   useEffect(() => {
     setIsClient(true);
     const storedData = getWaterIntakeData();
-    // Migration for old data: ensure drinks array and timestamp exists
     const migratedData = storedData.map(record => {
       let drinks = record.drinks || [];
       // @ts-ignore: Check for old 'amount' property
@@ -39,10 +35,9 @@ export function WaterLog() {
         // @ts-ignore
         drinks = oldAmount > 0 ? [{ type: 'Water', amount: oldAmount, timestamp: new Date(record.date).getTime() }] : [];
       }
-      // Ensure all drink entries have a timestamp
       const updatedDrinks = drinks.map(drink => ({
         ...drink,
-        timestamp: drink.timestamp || new Date(record.date).getTime() // Fallback timestamp if missing
+        timestamp: drink.timestamp || new Date(record.date).getTime() 
       }));
       return {
         ...record,
@@ -51,21 +46,7 @@ export function WaterLog() {
       };
     });
     setRecords(migratedData as WaterIntakeRecord[]);
-
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      setNotificationPermission(Notification.permission);
-    }
-     // Load reminder preference from localStorage if available
-    const storedReminderPref = localStorage.getItem('dailyDrops_remindersEnabled');
-    if (storedReminderPref) {
-      const isEnabled = JSON.parse(storedReminderPref);
-      setRemindersEnabled(isEnabled);
-      if (isEnabled && Notification.permission === 'default') {
-        // If reminders were enabled but permission is default, re-request.
-        // This handles cases where user reloads before granting/denying.
-        requestNotificationPerm();
-      }
-    }
+    // Notification permission and reminder preference loading moved to HomePage
   }, []);
 
   useEffect(() => {
@@ -74,52 +55,7 @@ export function WaterLog() {
     }
   }, [records, isClient]);
   
-  const requestNotificationPerm = async () => {
-    if (!('Notification' in window)) {
-      toast({ title: "Notifications not supported", description: "Your browser does not support desktop notifications.", variant: "destructive" });
-      setRemindersEnabled(false); // Disable if not supported
-      return;
-    }
-    if (Notification.permission === 'granted') {
-      setNotificationPermission('granted');
-      toast({ title: "Notifications Enabled", description: "You'll receive reminders to stay hydrated." });
-      return;
-    }
-    if (Notification.permission === 'denied') {
-      setNotificationPermission('denied');
-      toast({ title: "Notifications Denied", description: "Please enable notifications in your browser settings to receive reminders.", variant: "destructive" });
-      setRemindersEnabled(false); // Turn off toggle if denied
-      return;
-    }
-
-    const permission = await Notification.requestPermission();
-    setNotificationPermission(permission);
-    if (permission === 'granted') {
-      toast({ title: "Notifications Enabled", description: "You'll receive reminders to stay hydrated." });
-    } else if (permission === 'denied') {
-      toast({ title: "Notifications Denied", description: "Please enable notifications in your browser settings to receive reminders.", variant: "destructive" });
-      setRemindersEnabled(false); // Ensure toggle is off
-    } else {
-      // User dismissed, do nothing specific, toggle remains as is or user might try again
-      toast({ title: "Notification Permission Pending", description: "You can enable reminders again if you change your mind." });
-    }
-  };
-
-  useEffect(() => {
-    if (isClient) {
-      localStorage.setItem('dailyDrops_remindersEnabled', JSON.stringify(remindersEnabled));
-      if (remindersEnabled && notificationPermission === 'default') {
-        requestNotificationPerm();
-      } else if (remindersEnabled && notificationPermission === 'granted') {
-        // Placeholder for actual reminder scheduling logic
-        console.log("Reminder scheduling would start here.");
-      } else if (!remindersEnabled) {
-        // Placeholder for clearing reminder scheduling logic
-        console.log("Reminder scheduling would be cleared here.");
-      }
-    }
-  }, [remindersEnabled, notificationPermission, isClient]);
-
+  // Reminder and notification permission effect moved to HomePage
 
   const handleDateSelect = useCallback((date: Date | undefined) => {
     if (date) {
@@ -141,7 +77,7 @@ export function WaterLog() {
 
       if (existingRecordIndex > -1) {
         const updatedRecord = { ...newRecords[existingRecordIndex] };
-        updatedRecord.drinks = [...(updatedRecord.drinks || []), newDrinkEntry]; // Always add as new entry
+        updatedRecord.drinks = [...(updatedRecord.drinks || []), newDrinkEntry];
         newRecords[existingRecordIndex] = updatedRecord;
       } else {
         newRecords.push({
@@ -180,7 +116,7 @@ export function WaterLog() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
-      {/* Left Column: Calendar and Settings */}
+      {/* Left Column: Calendar */}
       <div className="lg:col-span-2 space-y-6">
         <Card className="shadow-lg bg-card/85 dark:bg-card/75 backdrop-blur-md">
           <CardHeader>
@@ -200,39 +136,7 @@ export function WaterLog() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg bg-card/85 dark:bg-card/75 backdrop-blur-md">
-          <CardHeader>
-            <CardTitle className="flex items-center text-xl">
-              <SlidersHorizontal className="mr-2 h-5 w-5 text-primary" />
-              Settings
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between space-x-2 p-2 rounded-md border">
-              <Label htmlFor="reminders-switch" className="flex items-center cursor-pointer">
-                <BellRing className="mr-2 h-4 w-4" />
-                Enable Drink Reminders
-              </Label>
-              <Switch
-                id="reminders-switch"
-                checked={remindersEnabled}
-                onCheckedChange={(checked) => {
-                  setRemindersEnabled(checked);
-                  if (checked && Notification.permission === 'default') {
-                    requestNotificationPerm();
-                  } else if (checked && Notification.permission === 'denied') {
-                     toast({ title: "Notifications Denied", description: "Enable notifications in browser settings to use reminders.", variant: "destructive" });
-                     setRemindersEnabled(false); // Keep it off if denied
-                  }
-                }}
-                aria-label="Toggle drink reminders"
-              />
-            </div>
-            {notificationPermission === 'denied' && remindersEnabled && (
-                <p className="text-xs text-destructive">Notifications are blocked. Please update your browser settings.</p>
-            )}
-          </CardContent>
-        </Card>
+        {/* Settings Card Removed - Functionality moved to header dropdown */}
       </div>
 
       {/* Right Column: Intake Display, Logging, and Log Table */}
