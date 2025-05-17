@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import Image from 'next/image'; // Import the Image component
 
 import { WaterLog } from '@/components/WaterLog';
 import { Droplet, SlidersHorizontal, BarChart3, BellRing, UserCircle2 } from 'lucide-react';
@@ -63,7 +64,7 @@ export default function HomePage() {
     if (typeof window !== 'undefined' && 'Notification' in window) {
       setNotificationPermission(Notification.permission);
     }
-    const storedReminderPref = localStorage.getItem('flowGarden_remindersEnabled'); // Updated key
+    const storedReminderPref = localStorage.getItem('flowGarden_remindersEnabled');
     if (storedReminderPref) {
       const isEnabled = JSON.parse(storedReminderPref);
       setRemindersEnabled(isEnabled);
@@ -81,7 +82,7 @@ export default function HomePage() {
       });
       setCalculatedDailyGoal(calculateDailyGoal(loadedProfile));
     } else {
-      setCalculatedDailyGoal(calculateDailyGoal(null)); // Use fallback if no profile
+      setCalculatedDailyGoal(calculateDailyGoal(null)); 
     }
   }, [profileForm]);
 
@@ -97,11 +98,9 @@ export default function HomePage() {
     setUserProfile(updatedProfile);
     setCalculatedDailyGoal(calculateDailyGoal(updatedProfile));
     toast({ title: "Profile Updated", description: "Your daily goal has been recalculated." });
-    // Note: Age and Gender are collected but not used in the current goal calculation formula.
   };
 
   const requestNotificationPerm = async () => {
-    // ... (notification permission logic remains the same)
     if (!('Notification' in window)) {
       toast({ title: "Notifications not supported", description: "Your browser does not support desktop notifications.", variant: "destructive" });
       setRemindersEnabled(false);
@@ -135,7 +134,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isClient) {
-      localStorage.setItem('flowGarden_remindersEnabled', JSON.stringify(remindersEnabled)); // Updated key
+      localStorage.setItem('flowGarden_remindersEnabled', JSON.stringify(remindersEnabled)); 
       if (remindersEnabled && notificationPermission === 'granted') {
         console.log("Reminder scheduling would start here if permission granted.");
       } else if (!remindersEnabled) {
@@ -308,6 +307,16 @@ export default function HomePage() {
       
       <main className="flex-grow p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
+          <div className="mb-8 flex justify-center">
+            <Image 
+              src="https://placehold.co/120x120.png" 
+              alt="Decorative garden illustration" 
+              width={120} 
+              height={120}
+              className="rounded-lg shadow-md"
+              data-ai-hint="garden illustration" 
+            />
+          </div>
           <WaterLog 
             userProfile={userProfile} 
             calculatedDailyGoal={calculatedDailyGoal}
