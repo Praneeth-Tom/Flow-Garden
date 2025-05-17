@@ -126,6 +126,8 @@ export default function HomePage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
+                 <ThemeToggle />
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-transparent cursor-default">
                   <div className="flex items-center justify-between w-full">
                     <Label htmlFor="reminders-switch-header" className="flex items-center cursor-pointer text-sm">
@@ -145,9 +147,6 @@ export default function HomePage() {
                     Notifications blocked in browser.
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>Theme</DropdownMenuLabel>
-                <ThemeToggle /> 
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -166,4 +165,3 @@ export default function HomePage() {
     </div>
   );
 }
-
