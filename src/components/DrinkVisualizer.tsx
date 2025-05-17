@@ -17,6 +17,7 @@ interface DrinkVisualizerProps {
 }
 
 const VISUAL_MAX_REFERENCE_AMOUNT = 500;
+const CONTAINER_BASE_FILL_VAR = "hsl(var(--container-base-fill))";
 
 const GlassVisual = ({ fillPercent, color }: VisualProps) => (
   <svg width="60" height="90" viewBox="0 0 60 90" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true">
@@ -27,7 +28,7 @@ const GlassVisual = ({ fillPercent, color }: VisualProps) => (
       </clipPath>
     </defs>
     {/* Pint glass shape */}
-    <path d="M12 10 H48 L44 85 H16 Z" fill="#eff0f2" />
+    <path d="M12 10 H48 L44 85 H16 Z" fill={CONTAINER_BASE_FILL_VAR} />
     {fillPercent > 0 && (
       <rect
         x="12" // Min x-coordinate of the path
@@ -49,8 +50,8 @@ const CoffeeMugVisual = ({ fillPercent, color }: VisualProps) => (
         <rect x="5" y="10" width="45" height="45" rx="3" />
       </clipPath>
     </defs>
-    <rect x="5" y="10" width="45" height="45" rx="3" fill="#eff0f2" />
-    <path d="M50 20 Q60 25 60 32.5 Q60 40 50 45" fill="#eff0f2" /> {/* Handle */}
+    <rect x="5" y="10" width="45" height="45" rx="3" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M50 20 Q60 25 60 32.5 Q60 40 50 45" fill={CONTAINER_BASE_FILL_VAR} /> {/* Handle */}
     {fillPercent > 0 && (
       <rect
         x="5"
@@ -72,7 +73,7 @@ const WaterJugVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M25,10 H45 V15 C55,15 60,25 60,30 L60,75 C60,85 50,85 35,85 C20,85 10,85 10,75 L10,30 C10,25 15,15 25,15 Z" />
       </clipPath>
     </defs>
-    <path d="M25,10 H45 V15 C55,15 60,25 60,30 L60,75 C60,85 50,85 35,85 C20,85 10,85 10,75 L10,30 C10,25 15,15 25,15 Z" fill="#eff0f2" />
+    <path d="M25,10 H45 V15 C55,15 60,25 60,30 L60,75 C60,85 50,85 35,85 C20,85 10,85 10,75 L10,30 C10,25 15,15 25,15 Z" fill={CONTAINER_BASE_FILL_VAR} />
     {fillPercent > 0 && (
       <rect
         x="10" 
@@ -94,8 +95,8 @@ const JuiceBottleVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M15 88 L15 25 Q15 15 20 12 H30 Q35 15 35 25 L35 88 Z M18 10 H32 V5 H18 Z" /> {/* Bottle with cap */}
       </clipPath>
     </defs>
-    <path d="M15 88 L15 25 Q15 15 20 12 H30 Q35 15 35 25 L35 88 Z" fill="#eff0f2" />
-    <path d="M18 10 H32 V5 H18 Z" fill="#eff0f2" /> {/* Cap */}
+    <path d="M15 88 L15 25 Q15 15 20 12 H30 Q35 15 35 25 L35 88 Z" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M18 10 H32 V5 H18 Z" fill={CONTAINER_BASE_FILL_VAR} /> {/* Cap */}
     {fillPercent > 0 && (
       <rect // Fill for the main body part
         x="15" // x of the main body
@@ -117,7 +118,7 @@ const MilkCartonVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z" />
       </clipPath>
     </defs>
-    <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z" fill="#eff0f2" />
+    <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z" fill={CONTAINER_BASE_FILL_VAR} />
     {/* Top folds are now part of the main path's flat fill */}
     {fillPercent > 0 && (
       <rect
@@ -140,9 +141,9 @@ const SmallCupVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z M20 25 Q20 10 30 10 Q40 10 40 25" /> 
       </clipPath>
     </defs>
-    <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z" fill="#eff0f2" /> {/* Main body */}
-    <path d="M50 35 C55 35 55 45 50 45" fill="#eff0f2" /> {/* Small handle */}
-    <path d="M20 25 Q20 10 30 10 Q40 10 40 25" fill="#eff0f2" /> {/* Top opening visual illusion */}
+    <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z" fill={CONTAINER_BASE_FILL_VAR} /> {/* Main body */}
+    <path d="M50 35 C55 35 55 45 50 45" fill={CONTAINER_BASE_FILL_VAR} /> {/* Small handle */}
+    <path d="M20 25 Q20 10 30 10 Q40 10 40 25" fill={CONTAINER_BASE_FILL_VAR} /> {/* Top opening visual illusion */}
 
     {fillPercent > 0 && (
       <rect
@@ -166,14 +167,14 @@ const KettleVisual = ({ fillPercent, color }: VisualProps) => (
       </clipPath>
     </defs>
     {/* Body */}
-    <path d="M15 70 A25 25 0 0 1 65 70 L60 30 A5 5 0 0 0 55 25 H25 A5 5 0 0 0 20 30 Z" fill="#eff0f2" />
+    <path d="M15 70 A25 25 0 0 1 65 70 L60 30 A5 5 0 0 0 55 25 H25 A5 5 0 0 0 20 30 Z" fill={CONTAINER_BASE_FILL_VAR} />
     {/* Handle */}
-    <path d="M65 40 C75 35, 75 55, 65 60" fill="#eff0f2" />
+    <path d="M65 40 C75 35, 75 55, 65 60" fill={CONTAINER_BASE_FILL_VAR} />
     {/* Spout */}
-    <path d="M15 35 L5 30 Q10 25 15 25" fill="#eff0f2" />
+    <path d="M15 35 L5 30 Q10 25 15 25" fill={CONTAINER_BASE_FILL_VAR} />
     {/* Lid */}
-    <ellipse cx="40" cy="25" rx="16" ry="4" fill="#eff0f2" />
-    <circle cx="40" cy="22" r="3" fill="#eff0f2" />
+    <ellipse cx="40" cy="25" rx="16" ry="4" fill={CONTAINER_BASE_FILL_VAR} />
+    <circle cx="40" cy="22" r="3" fill={CONTAINER_BASE_FILL_VAR} />
 
     {fillPercent > 0 && (
        <rect
@@ -196,8 +197,8 @@ const BeerMugVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M15 80 L15 15 Q15 10 20 10 H50 Q55 10 55 15 L55 80 Z" />
       </clipPath>
     </defs>
-    <path d="M15 80 L15 15 Q15 10 20 10 H50 Q55 10 55 15 L55 80 Z" fill="#eff0f2" /> {/* Mug Body */}
-    <path d="M55 25 Q65 30 65 45 Q65 60 55 65" fill="#eff0f2" /> {/* Handle */}
+    <path d="M15 80 L15 15 Q15 10 20 10 H50 Q55 10 55 15 L55 80 Z" fill={CONTAINER_BASE_FILL_VAR} /> {/* Mug Body */}
+    <path d="M55 25 Q65 30 65 45 Q65 60 55 65" fill={CONTAINER_BASE_FILL_VAR} /> {/* Handle */}
     {fillPercent > 0 && (
       <rect
         x="15"
@@ -219,18 +220,8 @@ const CocktailGlassVisual = ({ fillPercent, color }: VisualProps) => ( // Martin
         <path d="M5 15 L35 50 L65 15 Z" /> {/* Inverted cone for martini */}
       </clipPath>
     </defs>
-    <path d="M5 15 L35 50 L65 15 Z" fill="#eff0f2" /> {/* Bowl */}
-    <path d="M35 50 L35 80 M20 80 H50" fill="#eff0f2" /> {/* Stem and Base */}
-    {/* <polygon 
-        points={`
-          ${35 - (30 * fillPercent / 100)}, ${50 - (35 * fillPercent / 100)}
-          ${35 + (30 * fillPercent / 100)}, ${50 - (35 * fillPercent / 100)}
-          35, 50
-        `}
-        fill={color}
-        clipPath="url(#dynamicCocktailClip)"
-        style={{ transition: 'points 0.2s ease-out' }} 
-      /> */}
+    <path d="M5 15 L35 50 L65 15 Z" fill={CONTAINER_BASE_FILL_VAR} /> {/* Bowl */}
+    <path d="M35 50 L35 80 M20 80 H50" fill={CONTAINER_BASE_FILL_VAR} /> {/* Stem and Base */}
      {fillPercent > 0 && ( // Rect fill for Martini glass
       <rect
         x={5} // x of the clip path
@@ -300,3 +291,4 @@ export function DrinkVisualizer({ drinkType, currentAmount }: DrinkVisualizerPro
     </div>
   );
 }
+

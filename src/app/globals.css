@@ -54,6 +54,11 @@ body {
     --drink-milk: 220 20% 90%;     /* Very Light Blue/Grey */
     --drink-alcohol: 0 75% 55%;    /* Reddish */
 
+    /* SVG Container Base Fill */
+    --container-base-fill-light-hsl: 220 17% 94%; /* Approx #eff0f2 */
+    --container-base-fill-dark-hsl: 0 0% 18%;   /* Approx #2f2f2f */
+    --container-base-fill: hsl(var(--container-base-fill-light-hsl));
+
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -108,6 +113,9 @@ body {
     --drink-tea: 85 35% 65%;       /* Lighter Muted Green */
     --drink-milk: 220 15% 80%;     /* Light Grey, more visible */
     --drink-alcohol: 0 70% 60%;    /* Slightly lighter Reddish */
+
+    /* SVG Container Base Fill - Dark Theme */
+    --container-base-fill: hsl(var(--container-base-fill-dark-hsl));
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
