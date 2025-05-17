@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
 import { DRINK_TYPES } from '@/types';
-import { Droplet } from 'lucide-react';
+import { Droplet } from 'lucide-react'; // Default icon
 
 interface WaterIntakeInputProps {
   onAddWater: (amount: number, drinkType: string) => void;
@@ -26,6 +26,9 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
   const [amount, setAmount] = useState('');
   const [selectedDrinkType, setSelectedDrinkType] = useState<string>(DRINK_TYPES[0].name); // Default to Water
   const { toast } = useToast();
+
+  const selectedDrinkInfo = DRINK_TYPES.find(dt => dt.name === selectedDrinkType);
+  const SelectedIcon = selectedDrinkInfo?.icon || Droplet;
 
   const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
@@ -48,13 +51,11 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
   };
 
   const handleQuickAdd = (quickAmount: number) => {
-    // Quick add defaults to Water
-    const waterType = DRINK_TYPES.find(dt => dt.name === 'Water')?.name || DRINK_TYPES[0].name;
-    onAddWater(quickAmount, waterType);
-    const drinkDisplayName = DRINK_TYPES.find(dt => dt.name === waterType)?.displayName || waterType;
+    const waterTypeInfo = DRINK_TYPES.find(dt => dt.name === 'Water') || DRINK_TYPES[0];
+    onAddWater(quickAmount, waterTypeInfo.name);
     toast({
       title: 'Intake Added!',
-      description: `${quickAmount}ml of ${drinkDisplayName} added.`,
+      description: `${quickAmount}ml of ${waterTypeInfo.displayName} added.`,
     });
   }
 
@@ -68,16 +69,25 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
               <SelectValue placeholder="Select drink type" />
             </SelectTrigger>
             <SelectContent>
-              {DRINK_TYPES.map(drink => (
-                <SelectItem key={drink.name} value={drink.name}>
-                  {drink.displayName}
-                </SelectItem>
-              ))}
+              {DRINK_TYPES.map(drink => {
+                const ItemIcon = drink.icon;
+                return (
+                  <SelectItem key={drink.name} value={drink.name}>
+                    <div className="flex items-center">
+                      <ItemIcon className="mr-2 h-5 w-5 text-foreground/80" />
+                      <span>{drink.displayName}</span>
+                    </div>
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
         <div className="flex-grow">
-          <label htmlFor="amount" className="block text-sm font-medium text-muted-foreground mb-1">Amount (ml)</label>
+          <label htmlFor="amount" className="block text-sm font-medium text-muted-foreground mb-1 items-center">
+            <SelectedIcon className="inline-block mr-1.5 h-4 w-4 text-primary align-middle" />
+            Amount (ml)
+          </label>
           <Input
             id="amount"
             type="number"
@@ -90,22 +100,25 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
           />
         </div>
         <Button type="submit" disabled={disabled || !amount} className="h-10">
-          <Droplet className="mr-2 h-4 w-4" /> Add
+          <SelectedIcon className="mr-2 h-4 w-4" /> Add
         </Button>
       </form>
       <div className="flex flex-wrap gap-2 justify-center md:justify-start">
         <span className="text-sm text-muted-foreground self-center mr-2">Quick Add (Water):</span>
-        {QUICK_ADD_AMOUNTS.map(qAmount => (
-          <Button 
-            key={qAmount} 
-            variant="outline" 
-            onClick={() => handleQuickAdd(qAmount)}
-            disabled={disabled}
-            aria-label={`Quick add ${qAmount} ml of Water`}
-          >
-            + {qAmount} ml
-          </Button>
-        ))}
+        {QUICK_ADD_AMOUNTS.map(qAmount => {
+          const WaterIcon = DRINK_TYPES.find(dt => dt.name === 'Water')?.icon || Droplet;
+          return (
+            <Button 
+              key={qAmount} 
+              variant="outline" 
+              onClick={() => handleQuickAdd(qAmount)}
+              disabled={disabled}
+              aria-label={`Quick add ${qAmount} ml of Water`}
+            >
+              <WaterIcon className="mr-2 h-4 w-4" /> + {qAmount} ml
+            </Button>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,4 +1,7 @@
 
+import type { LucideIcon } from 'lucide-react';
+import { Droplet, Grape, Coffee, Leaf, Milk, Wine } from 'lucide-react';
+
 export interface DrinkEntry {
   type: string; // e.g., 'Water', 'Juice'
   amount: number; // in milliliters
@@ -12,17 +15,18 @@ export interface WaterIntakeRecord {
 
 export interface DrinkTypeInfo {
   name: string;
-  colorVariable: string; // CSS variable name for HSL color
   displayName: string;
+  colorVariable: string; // CSS variable name for HSL color
+  icon: LucideIcon;
 }
 
 export const DRINK_TYPES: DrinkTypeInfo[] = [
-  { name: 'Water', displayName: '💧 Water', colorVariable: '--drink-water' },
-  { name: 'Juice', displayName: '🍹 Juice', colorVariable: '--drink-juice' },
-  { name: 'Coffee', displayName: '☕ Coffee', colorVariable: '--drink-coffee' },
-  { name: 'Tea', displayName: '🫖 Tea', colorVariable: '--drink-tea' },
-  { name: 'Milk', displayName: '🥛 Milk', colorVariable: '--drink-milk' },
-  { name: 'Alcohol', displayName: '🍺 Alcohol', colorVariable: '--drink-alcohol' },
+  { name: 'Water', displayName: '💧 Water', colorVariable: '--drink-water', icon: Droplet },
+  { name: 'Juice', displayName: '🍹 Juice', colorVariable: '--drink-juice', icon: Grape },
+  { name: 'Coffee', displayName: '☕ Coffee', colorVariable: '--drink-coffee', icon: Coffee },
+  { name: 'Tea', displayName: '🫖 Tea', colorVariable: '--drink-tea', icon: Leaf },
+  { name: 'Milk', displayName: '🥛 Milk', colorVariable: '--drink-milk', icon: Milk },
+  { name: 'Alcohol', displayName: '🍺 Alcohol', colorVariable: '--drink-alcohol', icon: Wine },
   // Add more drink types here if needed
 ];
 
