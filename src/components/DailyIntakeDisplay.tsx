@@ -101,10 +101,10 @@ export function DailyIntakeDisplay({ record, goal, viewMode }: DailyIntakeDispla
             <>
               <Image
                 src="https://placehold.co/600x400.png"
-                alt="Base intake visual - colorless"
+                alt="Parched isometric landscape"
                 layout="fill"
                 objectFit="cover"
-                data-ai-hint="monochrome landscape"
+                data-ai-hint="isometric cliff"
                 priority
               />
               <div
@@ -117,7 +117,7 @@ export function DailyIntakeDisplay({ record, goal, viewMode }: DailyIntakeDispla
           {goalAchieved && (
              <Image
                 src="https://placehold.co/600x400.png"
-                alt="Intake goal achieved - colorful"
+                alt="Intake goal achieved - vibrant landscape"
                 layout="fill"
                 objectFit="cover"
                 data-ai-hint="vibrant landscape"
