@@ -13,7 +13,9 @@ import {
 } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
 import { DRINK_TYPES } from '@/types';
-import { Droplet } from 'lucide-react'; // Default icon
+import type { LucideIcon } from 'lucide-react'; // For select items
+import { Droplet } from 'lucide-react'; // Default icon for fallback
+import { DrinkVisualizer } from './DrinkVisualizer';
 
 interface WaterIntakeInputProps {
   onAddWater: (amount: number, drinkType: string) => void;
@@ -28,7 +30,8 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
   const { toast } = useToast();
 
   const selectedDrinkInfo = DRINK_TYPES.find(dt => dt.name === selectedDrinkType);
-  const SelectedIcon = selectedDrinkInfo?.icon || Droplet;
+  // Icon for the "Add" button, not the visualizer
+  const AddButtonIcon = selectedDrinkInfo?.icon || Droplet; 
 
   const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
@@ -42,7 +45,7 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
       return;
     }
     onAddWater(numAmount, selectedDrinkType);
-    setAmount('');
+    setAmount(''); // Reset amount after adding
     const drinkDisplayName = DRINK_TYPES.find(dt => dt.name === selectedDrinkType)?.displayName || selectedDrinkType;
     toast({
       title: 'Intake Added!',
@@ -52,16 +55,25 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
 
   const handleQuickAdd = (quickAmount: number) => {
     const waterTypeInfo = DRINK_TYPES.find(dt => dt.name === 'Water') || DRINK_TYPES[0];
-    onAddWater(quickAmount, waterTypeInfo.name);
+    onAddWater(quickAmount, waterTypeInfo.name); // Quick add always adds 'Water'
     toast({
       title: 'Intake Added!',
       description: `${quickAmount}ml of ${waterTypeInfo.displayName} added.`,
     });
   }
 
+  const currentNumAmount = parseInt(amount, 10);
+
   return (
     <div className="space-y-4">
-      <form onSubmit={handleSubmit} className="flex items-end space-x-2">
+      <div className="flex flex-col items-center space-y-1">
+        <DrinkVisualizer
+          drinkType={selectedDrinkType}
+          currentAmount={isNaN(currentNumAmount) || currentNumAmount < 0 ? 0 : currentNumAmount}
+        />
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4 md:flex-row md:items-end md:space-x-2 md:space-y-0">
         <div className="flex-grow">
           <label htmlFor="drink-type" className="block text-sm font-medium text-muted-foreground mb-1">Drink Type</label>
           <Select value={selectedDrinkType} onValueChange={setSelectedDrinkType} disabled={disabled}>
@@ -70,7 +82,7 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
             </SelectTrigger>
             <SelectContent>
               {DRINK_TYPES.map(drink => {
-                const ItemIcon = drink.icon;
+                const ItemIcon = drink.icon as LucideIcon; // Cast as LucideIcon for SelectItem
                 return (
                   <SelectItem key={drink.name} value={drink.name}>
                     <div className="flex items-center">
@@ -83,9 +95,9 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
             </SelectContent>
           </Select>
         </div>
+        
         <div className="flex-grow">
-          <label htmlFor="amount" className="block text-sm font-medium text-muted-foreground mb-1 items-center">
-            <SelectedIcon className="inline-block mr-1.5 h-4 w-4 text-primary align-middle" />
+          <label htmlFor="amount" className="block text-sm font-medium text-muted-foreground mb-1">
             Amount (ml)
           </label>
           <Input
@@ -97,12 +109,14 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
             aria-label="Water amount in milliliters"
             className="w-full"
             disabled={disabled}
+            min="1"
           />
         </div>
-        <Button type="submit" disabled={disabled || !amount} className="h-10">
-          <SelectedIcon className="mr-2 h-4 w-4" /> Add
+        <Button type="submit" disabled={disabled || !amount || parseInt(amount,10) <=0} className="h-10 w-full md:w-auto">
+          <AddButtonIcon className="mr-2 h-4 w-4" /> Add
         </Button>
       </form>
+      
       <div className="flex flex-wrap gap-2 justify-center md:justify-start">
         <span className="text-sm text-muted-foreground self-center mr-2">Quick Add (Water):</span>
         {QUICK_ADD_AMOUNTS.map(qAmount => {
@@ -114,6 +128,7 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
               onClick={() => handleQuickAdd(qAmount)}
               disabled={disabled}
               aria-label={`Quick add ${qAmount} ml of Water`}
+              className="h-10"
             >
               <WaterIcon className="mr-2 h-4 w-4" /> + {qAmount} ml
             </Button>
