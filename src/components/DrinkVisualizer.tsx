@@ -66,22 +66,21 @@ const CoffeeMugVisual = ({ fillPercent, color }: VisualProps) => ( // Renamed fr
   </svg>
 );
 
-// New Visuals
+// Updated WaterJugVisual
 const WaterJugVisual = ({ fillPercent, color }: VisualProps) => (
-  <svg width="70" height="90" viewBox="0 0 70 90" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true">
+  <svg width="70" height="90" viewBox="0 0 70 90" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true" data-ai-hint="water jug">
     <defs>
       <clipPath id="dynamicJugClip">
-        <path d="M15 85 C5 80, 5 60, 15 50 V15 H55 V50 C65 60, 65 80, 55 85 Z" />
+        <path d="M30,10 H50 V15 C60,15 65,25 65,30 L65,75 C65,85 55,85 35,85 C15,85 5,85 5,75 L5,30 C5,25 10,15 30,15 Z" />
       </clipPath>
     </defs>
-    <path d="M15 85 C5 80, 5 60, 15 50 V15 H55 V50 C65 60, 65 80, 55 85 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
-    <path d="M55 30 Q65 30 65 40 Q65 50 55 50" stroke="currentColor" strokeWidth="1.5" fill="none" /> {/* Handle */}
+    <path d="M30,10 H50 V15 C60,15 65,25 65,30 L65,75 C65,85 55,85 35,85 C15,85 5,85 5,75 L5,30 C5,25 10,15 30,15 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
     {fillPercent > 0 && (
       <rect
-        x="15"
-        y={15 + (70 * (100 - fillPercent) / 100)} // Fillable area from y=15 to y=85 (height 70)
-        width="40" // Width of the main body
-        height={(70 * fillPercent) / 100}
+        x="5" // x-coordinate of the body
+        y={30 + (45 * (100 - fillPercent) / 100)} // Fillable area from y=30 to y=75 (height 45)
+        width="60" // Width of the body (65-5)
+        height={(45 * fillPercent) / 100}
         fill={color}
         clipPath="url(#dynamicJugClip)"
         style={{ transition: 'y 0.2s ease-out, height 0.2s ease-out' }}
