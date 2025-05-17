@@ -63,19 +63,18 @@ export function WaterLog() {
   
   if (!isClient) {
     // Render a loading state or placeholder to avoid hydration mismatch
-    // For simplicity, returning null, but a skeleton loader would be better.
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
-        <Card className="md:col-span-1">
+        <Card className="md:col-span-1 bg-muted/50">
           <CardHeader><div className="h-6 bg-muted rounded w-3/4"></div></CardHeader>
           <CardContent><div className="h-64 bg-muted rounded"></div></CardContent>
         </Card>
         <div className="md:col-span-2 space-y-6">
-          <Card>
+          <Card className="bg-muted/50">
             <CardHeader><div className="h-6 bg-muted rounded w-1/2"></div></CardHeader>
             <CardContent><div className="h-20 bg-muted rounded"></div></CardContent>
           </Card>
-          <Card>
+          <Card className="bg-muted/50">
             <CardHeader><div className="h-6 bg-muted rounded w-1/3"></div></CardHeader>
             <CardContent><div className="h-24 bg-muted rounded"></div></CardContent>
           </Card>
@@ -86,7 +85,7 @@ export function WaterLog() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Card className="lg:col-span-1 shadow-lg">
+      <Card className="lg:col-span-1 shadow-lg bg-card/85 dark:bg-card/75 backdrop-blur-md">
         <CardHeader>
           <CardTitle className="flex items-center text-xl">
             <CalendarDays className="mr-2 h-5 w-5 text-primary" />
@@ -105,7 +104,7 @@ export function WaterLog() {
       </Card>
 
       <div className="lg:col-span-2 space-y-6">
-        <Card className="shadow-lg">
+        <Card className="shadow-lg bg-card/85 dark:bg-card/75 backdrop-blur-md">
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <Droplet className="mr-2 h-5 w-5 text-primary" />
@@ -117,7 +116,7 @@ export function WaterLog() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-lg bg-card/85 dark:bg-card/75 backdrop-blur-md">
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <PlusCircle className="mr-2 h-5 w-5 text-primary" />
