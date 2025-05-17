@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
 import { DRINK_TYPES } from '@/types';
-import type { LucideIcon } from 'lucide-react'; // For select items
-import { Droplet } from 'lucide-react'; // Default icon for fallback
+import type { LucideIcon } from 'lucide-react';
+import { Droplet } from 'lucide-react';
 import { DrinkVisualizer } from './DrinkVisualizer';
 
 interface WaterIntakeInputProps {
@@ -26,11 +26,10 @@ const QUICK_ADD_AMOUNTS = [250, 500, 750]; // in ml
 
 export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeInputProps) {
   const [amount, setAmount] = useState('');
-  const [selectedDrinkType, setSelectedDrinkType] = useState<string>(DRINK_TYPES[0].name); // Default to Water
+  const [selectedDrinkType, setSelectedDrinkType] = useState<string>(DRINK_TYPES[0].name);
   const { toast } = useToast();
 
   const selectedDrinkInfo = DRINK_TYPES.find(dt => dt.name === selectedDrinkType);
-  // Icon for the "Add" button, not the visualizer
   const AddButtonIcon = selectedDrinkInfo?.icon || Droplet; 
 
   const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
@@ -45,7 +44,7 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
       return;
     }
     onAddWater(numAmount, selectedDrinkType);
-    setAmount(''); // Reset amount after adding
+    setAmount(''); 
     const drinkDisplayName = DRINK_TYPES.find(dt => dt.name === selectedDrinkType)?.displayName || selectedDrinkType;
     toast({
       title: 'Intake Added!',
@@ -55,7 +54,11 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
 
   const handleQuickAdd = (quickAmount: number) => {
     const waterTypeInfo = DRINK_TYPES.find(dt => dt.name === 'Water') || DRINK_TYPES[0];
-    onAddWater(quickAmount, waterTypeInfo.name); // Quick add always adds 'Water'
+    // Ensure 'Water' type is selected for quick add if it's not already
+    if (selectedDrinkType !== 'Water') {
+        setSelectedDrinkType('Water');
+    }
+    onAddWater(quickAmount, waterTypeInfo.name); 
     toast({
       title: 'Intake Added!',
       description: `${quickAmount}ml of ${waterTypeInfo.displayName} added.`,
@@ -66,12 +69,10 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col items-center space-y-1">
-        <DrinkVisualizer
-          drinkType={selectedDrinkType}
-          currentAmount={isNaN(currentNumAmount) || currentNumAmount < 0 ? 0 : currentNumAmount}
-        />
-      </div>
+      <DrinkVisualizer
+        drinkType={selectedDrinkType}
+        currentAmount={isNaN(currentNumAmount) || currentNumAmount < 0 ? 0 : currentNumAmount}
+      />
 
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4 md:flex-row md:items-end md:space-x-2 md:space-y-0">
         <div className="flex-grow">
@@ -82,7 +83,7 @@ export function WaterIntakeInput({ onAddWater, disabled = false }: WaterIntakeIn
             </SelectTrigger>
             <SelectContent>
               {DRINK_TYPES.map(drink => {
-                const ItemIcon = drink.icon as LucideIcon; // Cast as LucideIcon for SelectItem
+                const ItemIcon = drink.icon as LucideIcon;
                 return (
                   <SelectItem key={drink.name} value={drink.name}>
                     <div className="flex items-center">

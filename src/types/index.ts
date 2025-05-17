@@ -18,16 +18,16 @@ export interface DrinkTypeInfo {
   displayName: string;
   colorVariable: string; // CSS variable name for HSL color
   icon: LucideIcon;
+  visuals: [string, string]; // Identifiers for two swappable visual components
 }
 
 export const DRINK_TYPES: DrinkTypeInfo[] = [
-  { name: 'Water', displayName: '💧 Water', colorVariable: '--drink-water', icon: Droplet },
-  { name: 'Juice', displayName: '🍹 Juice', colorVariable: '--drink-juice', icon: Grape },
-  { name: 'Coffee', displayName: '☕ Coffee', colorVariable: '--drink-coffee', icon: Coffee },
-  { name: 'Tea', displayName: '🫖 Tea', colorVariable: '--drink-tea', icon: Leaf },
-  { name: 'Milk', displayName: '🥛 Milk', colorVariable: '--drink-milk', icon: Milk },
-  { name: 'Alcohol', displayName: '🍺 Alcohol', colorVariable: '--drink-alcohol', icon: Wine },
-  // Add more drink types here if needed
+  { name: 'Water', displayName: '💧 Water', colorVariable: '--drink-water', icon: Droplet, visuals: ['glass', 'jug'] },
+  { name: 'Juice', displayName: '🍹 Juice', colorVariable: '--drink-juice', icon: Grape, visuals: ['glass', 'juice-bottle'] },
+  { name: 'Coffee', displayName: '☕ Coffee', colorVariable: '--drink-coffee', icon: Coffee, visuals: ['small-cup', 'coffee-mug'] },
+  { name: 'Tea', displayName: '🫖 Tea', colorVariable: '--drink-tea', icon: Leaf, visuals: ['small-cup', 'kettle'] },
+  { name: 'Milk', displayName: '🥛 Milk', colorVariable: '--drink-milk', icon: Milk, visuals: ['glass', 'milk-carton'] },
+  { name: 'Alcohol', displayName: '🍺 Alcohol', colorVariable: '--drink-alcohol', icon: Wine, visuals: ['beer-mug', 'cocktail-glass'] },
 ];
 
 export function getDrinkColor(drinkType: string): string {
