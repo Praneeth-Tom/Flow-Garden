@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -106,9 +107,18 @@ export default function HomePage() {
             <h1 className="text-3xl font-semibold tracking-tight">Daily Drops</h1>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon" aria-label="View Daily Log" className="text-foreground/70 hover:text-foreground">
-              <BarChart3 className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Daily Log Options" className="text-foreground/70 hover:text-foreground">
+                  <BarChart3 className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem disabled>View Stats (coming soon)</DropdownMenuItem>
+                <DropdownMenuItem disabled>Export Log (coming soon)</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Application Settings" className="text-foreground/70 hover:text-foreground">
@@ -136,6 +146,7 @@ export default function HomePage() {
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
+                <DropdownMenuLabel>Theme</DropdownMenuLabel>
                 <ThemeToggle /> 
               </DropdownMenuContent>
             </DropdownMenu>
@@ -145,7 +156,6 @@ export default function HomePage() {
       
       <main className="flex-grow p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
-          {/* Pass reminder state if WaterLog needs to react to it, though it seems self-contained now */}
           <WaterLog />
         </div>
       </main>
