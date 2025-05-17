@@ -18,22 +18,22 @@ interface DrinkVisualizerProps {
 }
 
 const VISUAL_MAX_REFERENCE_AMOUNT = 500;
-const CONTAINER_BASE_FILL_VAR = "hsl(var(--container-base-fill))";
+// CONTAINER_BASE_FILL_VAR is removed as we will use inline styles with var(--container-base-fill)
 
 const GlassVisual = ({ fillPercent, color }: VisualProps) => (
   <svg width="60" height="90" viewBox="0 0 60 90" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true">
     <defs>
       <clipPath id="dynamicGlassClip">
-        <path d="M12 10 H48 L44 85 H16 Z" />
+        <path d="M12 5 H48 L42 85 H18 Z" />
       </clipPath>
     </defs>
-    <path d="M12 10 H48 L44 85 H16 Z" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M12 5 H48 L42 85 H18 Z" style={{ fill: "var(--container-base-fill)" }} />
     {fillPercent > 0 && (
       <rect
         x="12"
-        y={10 + (75 * (100 - fillPercent) / 100)}
-        width="36"
-        height={(75 * fillPercent) / 100}
+        y={5 + (80 * (100 - fillPercent) / 100)} // Adjusted y for new path starting at y=5, height 80
+        width="36" // Width of the clippable area
+        height={(80 * fillPercent) / 100} // Adjusted height
         fill={color}
         clipPath="url(#dynamicGlassClip)"
         style={{ transition: 'y 0.2s ease-out, height 0.2s ease-out' }}
@@ -49,8 +49,8 @@ const CoffeeMugVisual = ({ fillPercent, color }: VisualProps) => (
         <rect x="5" y="10" width="45" height="45" rx="3" />
       </clipPath>
     </defs>
-    <rect x="5" y="10" width="45" height="45" rx="3" fill={CONTAINER_BASE_FILL_VAR} />
-    <path d="M50 20 Q60 25 60 32.5 Q60 40 50 45" fill={CONTAINER_BASE_FILL_VAR} />
+    <rect x="5" y="10" width="45" height="45" rx="3" style={{ fill: "var(--container-base-fill)" }} />
+    <path d="M50 20 Q60 25 60 32.5 Q60 40 50 45" style={{ fill: "var(--container-base-fill)" }} />
     {fillPercent > 0 && (
       <rect
         x="5"
@@ -74,7 +74,7 @@ const WaterJugVisual = ({ fillPercent, color }: VisualProps) => (
       </clipPath>
     </defs>
     {/* Main body path - ensures centered opening */}
-    <path d="M20 10 H50 Q55 10 55 15 V20 H15 V15 Q15 10 20 10 Z M15 20 L15 75 C15 85 25 85 35 85 C45 85 55 85 55 75 L55 20 Z" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M20 10 H50 Q55 10 55 15 V20 H15 V15 Q15 10 20 10 Z M15 20 L15 75 C15 85 25 85 35 85 C45 85 55 85 55 75 L55 20 Z" style={{ fill: "var(--container-base-fill)" }} />
     {fillPercent > 0 && (
       <rect
         x="15" // x of the main body for filling
@@ -97,8 +97,8 @@ const JuiceBottleVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M15 88 L15 25 Q15 15 20 12 H30 Q35 15 35 25 L35 88 Z M18 10 H32 V5 H18 Z" />
       </clipPath>
     </defs>
-    <path d="M15 88 L15 25 Q15 15 20 12 H30 Q35 15 35 25 L35 88 Z" fill={CONTAINER_BASE_FILL_VAR} />
-    <path d="M18 10 H32 V5 H18 Z" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M15 88 L15 25 Q15 15 20 12 H30 Q35 15 35 25 L35 88 Z" style={{ fill: "var(--container-base-fill)" }} />
+    <path d="M18 10 H32 V5 H18 Z" style={{ fill: "var(--container-base-fill)" }} />
     {fillPercent > 0 && (
       <rect
         x="15"
@@ -120,7 +120,7 @@ const MilkCartonVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z" />
       </clipPath>
     </defs>
-    <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z" style={{ fill: "var(--container-base-fill)" }} />
     {fillPercent > 0 && (
       <rect
         x="10"
@@ -142,9 +142,9 @@ const SmallCupVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z M20 25 Q20 10 30 10 Q40 10 40 25" /> 
       </clipPath>
     </defs>
-    <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z" fill={CONTAINER_BASE_FILL_VAR} />
-    <path d="M50 35 C55 35 55 45 50 45" fill={CONTAINER_BASE_FILL_VAR} />
-    <path d="M20 25 Q20 10 30 10 Q40 10 40 25" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z" style={{ fill: "var(--container-base-fill)" }} />
+    <path d="M50 35 C55 35 55 45 50 45" style={{ fill: "var(--container-base-fill)" }} />
+    <path d="M20 25 Q20 10 30 10 Q40 10 40 25" style={{ fill: "var(--container-base-fill)" }} />
     {fillPercent > 0 && (
       <rect
         x="10"
@@ -166,11 +166,11 @@ const KettleVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M15 70 A25 25 0 0 1 65 70 L60 30 A5 5 0 0 0 55 25 H25 A5 5 0 0 0 20 30 Z" />
       </clipPath>
     </defs>
-    <path d="M15 70 A25 25 0 0 1 65 70 L60 30 A5 5 0 0 0 55 25 H25 A5 5 0 0 0 20 30 Z" fill={CONTAINER_BASE_FILL_VAR} />
-    <path d="M65 40 C75 35, 75 55, 65 60" fill={CONTAINER_BASE_FILL_VAR} />
-    <path d="M15 35 L5 30 Q10 25 15 25" fill={CONTAINER_BASE_FILL_VAR} />
-    <ellipse cx="40" cy="25" rx="16" ry="4" fill={CONTAINER_BASE_FILL_VAR} />
-    <circle cx="40" cy="22" r="3" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M15 70 A25 25 0 0 1 65 70 L60 30 A5 5 0 0 0 55 25 H25 A5 5 0 0 0 20 30 Z" style={{ fill: "var(--container-base-fill)" }} />
+    <path d="M65 40 C75 35, 75 55, 65 60" style={{ fill: "var(--container-base-fill)" }} />
+    <path d="M15 35 L5 30 Q10 25 15 25" style={{ fill: "var(--container-base-fill)" }} />
+    <ellipse cx="40" cy="25" rx="16" ry="4" style={{ fill: "var(--container-base-fill)" }} />
+    <circle cx="40" cy="22" r="3" style={{ fill: "var(--container-base-fill)" }} />
     {fillPercent > 0 && (
        <rect
         x="20"
@@ -192,8 +192,8 @@ const BeerMugVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M15 80 L15 15 Q15 10 20 10 H50 Q55 10 55 15 L55 80 Z" />
       </clipPath>
     </defs>
-    <path d="M15 80 L15 15 Q15 10 20 10 H50 Q55 10 55 15 L55 80 Z" fill={CONTAINER_BASE_FILL_VAR} />
-    <path d="M55 25 Q65 30 65 45 Q65 60 55 65" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M15 80 L15 15 Q15 10 20 10 H50 Q55 10 55 15 L55 80 Z" style={{ fill: "var(--container-base-fill)" }} />
+    <path d="M55 25 Q65 30 65 45 Q65 60 55 65" style={{ fill: "var(--container-base-fill)" }} />
     {fillPercent > 0 && (
       <rect
         x="15"
@@ -215,8 +215,8 @@ const CocktailGlassVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M5 15 L35 50 L65 15 Z" />
       </clipPath>
     </defs>
-    <path d="M5 15 L35 50 L65 15 Z" fill={CONTAINER_BASE_FILL_VAR} />
-    <path d="M35 50 L35 80 M20 80 H50" fill={CONTAINER_BASE_FILL_VAR} />
+    <path d="M5 15 L35 50 L65 15 Z" style={{ fill: "var(--container-base-fill)" }} />
+    <path d="M35 50 L35 80 M20 80 H50" style={{ fill: "var(--container-base-fill)" }} />
      {fillPercent > 0 && (
       <rect
         x={5}
@@ -275,7 +275,7 @@ export function DrinkVisualizer({ drinkType, currentAmount }: DrinkVisualizerPro
   return (
     <div className="flex flex-col items-center">
       {/* Add key={resolvedTheme} to force re-mount on theme change */}
-      <VisualComponent fillPercent={fillPercent} color={color} key={resolvedTheme} />
+      <VisualComponent fillPercent={fillPercent} color={color} key={`${resolvedTheme}-${visualIdentifier}-${drinkType}`} />
       <Button 
         variant="outline" 
         size="sm" 
@@ -288,3 +288,4 @@ export function DrinkVisualizer({ drinkType, currentAmount }: DrinkVisualizerPro
     </div>
   );
 }
+
