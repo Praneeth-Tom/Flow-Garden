@@ -23,16 +23,18 @@ const GlassVisual = ({ fillPercent, color }: VisualProps) => (
   <svg width="60" height="90" viewBox="0 0 60 90" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true">
     <defs>
       <clipPath id="dynamicGlassClip">
-        <path d="M10 88 L15 12 H45 L50 88 Z" />
+        {/* Path for a pint glass: wider at top, narrower at bottom */}
+        <path d="M12 10 H48 L44 85 H16 Z" />
       </clipPath>
     </defs>
-    <path d="M10 88 L15 12 H45 L50 88 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
+    {/* Pint glass outline */}
+    <path d="M12 10 H48 L44 85 H16 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
     {fillPercent > 0 && (
       <rect
-        x="10"
-        y={12 + (76 * (100 - fillPercent) / 100)}
-        width="40"
-        height={(76 * fillPercent) / 100}
+        x="12" // Min x-coordinate of the path
+        y={10 + (75 * (100 - fillPercent) / 100)} // Top y-coordinate + (fillable_height * (1 - fill_ratio))
+        width="36" // Max width of the path (48-12)
+        height={(75 * fillPercent) / 100} // fillable_height * fill_ratio (fillable_height = 85-10 = 75)
         fill={color}
         clipPath="url(#dynamicGlassClip)"
         style={{ transition: 'y 0.2s ease-out, height 0.2s ease-out' }}
@@ -312,3 +314,4 @@ export function DrinkVisualizer({ drinkType, currentAmount }: DrinkVisualizerPro
     </div>
   );
 }
+
