@@ -1,9 +1,11 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { format, startOfDay } from 'date-fns';
 import { getWaterIntakeData, saveWaterIntakeData } from '@/lib/storage';
-import type { WaterIntakeRecord } from '@/types';
+import type { WaterIntakeRecord, DrinkEntry } from '@/types';
+import { getTotalIntake } from '@/types';
 import { CalendarView } from './CalendarView';
 import { DailyIntakeDisplay } from './DailyIntakeDisplay';
 import { WaterIntakeInput } from './WaterIntakeInput';
@@ -19,7 +21,21 @@ export function WaterLog() {
 
   useEffect(() => {
     setIsClient(true);
-    setRecords(getWaterIntakeData());
+    const storedData = getWaterIntakeData();
+    // Basic migration: if old format (amount property exists), convert to new format
+    const migratedData = storedData.map(record => {
+      if (record.hasOwnProperty('amount') && !record.hasOwnProperty('drinks')) {
+        // @ts-ignore
+        const oldAmount = record.amount as number;
+        return {
+          date: record.date,
+          goal: record.goal || DEFAULT_DAILY_GOAL_ML,
+          drinks: oldAmount > 0 ? [{ type: 'Water', amount: oldAmount }] : [],
+        };
+      }
+      return record;
+    });
+    setRecords(migratedData as WaterIntakeRecord[]);
   }, []);
 
   useEffect(() => {
@@ -34,21 +50,30 @@ export function WaterLog() {
     }
   }, []);
 
-  const handleAddWater = useCallback((amount: number) => {
+  const handleAddWater = useCallback((amount: number, drinkType: string) => {
     const dateStr = format(selectedDate, 'yyyy-MM-dd');
     setRecords(prevRecords => {
       const existingRecordIndex = prevRecords.findIndex(r => r.date === dateStr);
       let newRecords = [...prevRecords];
+
       if (existingRecordIndex > -1) {
-        const updatedRecord = {
-          ...newRecords[existingRecordIndex],
-          amount: newRecords[existingRecordIndex].amount + amount,
-        };
+        const updatedRecord = { ...newRecords[existingRecordIndex] };
+        updatedRecord.drinks = [...(updatedRecord.drinks || [])]; // Ensure drinks array exists
+        
+        const existingDrinkIndex = updatedRecord.drinks.findIndex(d => d.type === drinkType);
+        if (existingDrinkIndex > -1) {
+          updatedRecord.drinks[existingDrinkIndex] = {
+            ...updatedRecord.drinks[existingDrinkIndex],
+            amount: updatedRecord.drinks[existingDrinkIndex].amount + amount,
+          };
+        } else {
+          updatedRecord.drinks.push({ type: drinkType, amount: amount });
+        }
         newRecords[existingRecordIndex] = updatedRecord;
       } else {
         newRecords.push({
           date: dateStr,
-          amount: amount,
+          drinks: [{ type: drinkType, amount: amount }],
           goal: DEFAULT_DAILY_GOAL_ML,
         });
       }
@@ -120,7 +145,7 @@ export function WaterLog() {
           <CardHeader>
             <CardTitle className="flex items-center text-xl">
               <PlusCircle className="mr-2 h-5 w-5 text-primary" />
-              Log Water
+              Log Intake
             </CardTitle>
           </CardHeader>
           <CardContent>

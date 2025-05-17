@@ -1,8 +1,10 @@
+
 'use client';
 
 import type { DayContentProps } from 'react-day-picker';
 import { Calendar } from '@/components/ui/calendar';
 import type { WaterIntakeRecord } from '@/types';
+import { getTotalIntake } from '@/types';
 import { format } from 'date-fns';
 
 interface CalendarViewProps {
@@ -23,9 +25,11 @@ const CustomDayContent = ({ date, displayMonth }: DayContentProps, records: Wate
   let indicatorClass = '';
 
   if (record) {
-    if (record.amount >= (record.goal || dailyGoal)) {
+    const totalAmount = getTotalIntake(record.drinks);
+    const currentGoal = record.goal || dailyGoal;
+    if (totalAmount >= currentGoal) {
       indicatorClass = 'day-indicator-achieved'; // Greenish
-    } else if (record.amount > 0) {
+    } else if (totalAmount > 0) {
       indicatorClass = 'day-indicator-partial'; // Bluish
     }
   }

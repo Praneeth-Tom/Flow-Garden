@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -38,11 +39,21 @@ body {
 
     --radius: 0.5rem; /* Standard radius, can be increased for more "Fluent" feel if needed */
 
+    /* Original Chart Colors (can be repurposed or kept for other charts) */
     --chart-1: 120 70% 50%; /* Green for goal met */
     --chart-2: 207 80% 65%; /* Lighter blue for partial intake */
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    /* Drink Specific Colors */
+    --drink-water: 207 90% 54%;    /* Vibrant Blue (matches primary) */
+    --drink-juice: 35 92% 60%;     /* Bright Orange */
+    --drink-coffee: 30 50% 25%;    /* Dark Brown */
+    --drink-tea: 85 40% 55%;       /* Muted Green */
+    --drink-milk: 220 20% 90%;     /* Very Light Blue/Grey */
+    --drink-alcohol: 0 75% 55%;    /* Reddish */
+
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -83,11 +94,20 @@ body {
     --input: 240 3.7% 15.9%;
     --ring: 207 90% 54%;
 
+    /* Original Chart Colors - Dark Theme */
     --chart-1: 120 60% 45%;
     --chart-2: 207 70% 55%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* Drink Specific Colors - Dark Theme */
+    --drink-water: 207 90% 54%;    /* Vibrant Blue (matches primary) */
+    --drink-juice: 35 85% 55%;     /* Slightly desaturated Orange for dark mode */
+    --drink-coffee: 30 45% 35%;    /* Lighter Brown for dark mode */
+    --drink-tea: 85 35% 65%;       /* Lighter Muted Green */
+    --drink-milk: 220 15% 80%;     /* Light Grey, more visible */
+    --drink-alcohol: 0 70% 60%;    /* Slightly lighter Reddish */
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -111,8 +131,8 @@ body {
 
 /* Custom calendar day indicator styles */
 .day-indicator-partial {
-  @apply bg-chart-2;
+  @apply bg-chart-2; /* Existing color, might want to make this neutral or based on most prominent drink */
 }
 .day-indicator-achieved {
-  @apply bg-chart-1;
+  @apply bg-chart-1; /* Existing color, might want to make this neutral or based on most prominent drink */
 }
