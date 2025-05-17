@@ -128,7 +128,7 @@ export function DailyIntakeDisplay({ record, goal, viewMode }: DailyIntakeDispla
             <>
               <Image
                 src="https://placehold.co/600x400.png"
-                alt="Parched isometric landscape"
+                alt="Dark isometric cliff landscape, representing low water level"
                 layout="fill"
                 objectFit="cover"
                 data-ai-hint="isometric cliff"
@@ -182,4 +182,3 @@ export function DailyIntakeDisplay({ record, goal, viewMode }: DailyIntakeDispla
 
   return viewMode === 'imageVisualizer' ? renderImageVisualizerView() : renderProgressBarView();
 }
-

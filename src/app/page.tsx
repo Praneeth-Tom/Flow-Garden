@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import Image from 'next/image'; // Import the Image component
+// Image import removed as it's no longer used on this page
 
 import { WaterLog } from '@/components/WaterLog';
 import { Droplet, SlidersHorizontal, BarChart3, BellRing, UserCircle2 } from 'lucide-react';
@@ -307,16 +307,7 @@ export default function HomePage() {
       
       <main className="flex-grow p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-8 flex justify-center">
-            <Image 
-              src="https://placehold.co/120x120.png" 
-              alt="Decorative garden illustration" 
-              width={120} 
-              height={120}
-              className="rounded-lg shadow-md"
-              data-ai-hint="garden illustration" 
-            />
-          </div>
+          {/* Decorative Image removed from here */}
           <WaterLog 
             userProfile={userProfile} 
             calculatedDailyGoal={calculatedDailyGoal}
