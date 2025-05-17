@@ -11,11 +11,39 @@ interface DailyIntakeDisplayProps {
   viewMode: 'progressBar' | 'imageVisualizer';
 }
 
+// WaveSurfaceSVG Component for the animated wave
+// The fill for this wave should be slightly more opaque or a different shade than the main water body
+const WaveSurfaceSVG = () => (
+  <svg
+    width="100%"
+    height="20px" // Visual height of the wave effect
+    viewBox="0 0 100 20" // Width of one wave cycle is 100, height is 20
+    preserveAspectRatio="none" // Stretch to fill width, maintain aspect ratio for height
+    style={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+  >
+    <defs>
+      <pattern id="wavePattern" patternUnits="userSpaceOnUse" width="100" height="20" x="0" y="0">
+        {/* Wave: starts at mid-height, crests, troughs, ends at mid-height. Fills downwards. */}
+        {/* M0,10: Start middle height. Q25,0: Crest. 50,10: Mid. T100,10: Next mid. V20 H0 Z: Fill to bottom. */}
+        <path d="M0 10 Q25 0 50 10 T100 10 V20 H0 Z" fill="rgba(59, 130, 246, 0.7)" />
+      </pattern>
+    </defs>
+    {/* Rect is wider than SVG to allow pattern to scroll continuously */}
+    <rect
+      width="200%" 
+      height="100%"
+      fill="url(#wavePattern)"
+      className="wave-rect-animated" // Apply animation via CSS class
+    />
+  </svg>
+);
+
+
 export function DailyIntakeDisplay({ record, goal, viewMode }: DailyIntakeDisplayProps) {
   const currentDrinks = record?.drinks || [];
   const totalCurrentAmount = getTotalIntake(currentDrinks);
   const currentGoal = goal; 
-  const progressPercent = currentGoal > 0 ? Math.min((totalCurrentAmount / currentGoal) * 100, 100) : 0; // Cap at 100 for fill
+  const progressPercent = currentGoal > 0 ? Math.min((totalCurrentAmount / currentGoal) * 100, 100) : 0;
 
   const aggregatedDrinksByType = useMemo(() => {
     if (!currentDrinks.length) return [];
@@ -107,11 +135,20 @@ export function DailyIntakeDisplay({ record, goal, viewMode }: DailyIntakeDispla
                 data-ai-hint="isometric cliff"
                 priority
               />
-              <div
-                className="absolute bottom-0 left-0 w-full bg-blue-500/50 transition-all duration-500 ease-out"
-                style={{ height: `${progressPercent}%` }}
-                aria-hidden="true"
-              />
+              {progressPercent > 0 && (
+                <div // Water body div
+                  className="absolute bottom-0 left-0 w-full transition-all duration-500 ease-out"
+                  style={{
+                    height: `${progressPercent}%`,
+                    backgroundColor: 'rgba(59, 130, 246, 0.3)', // Lighter blue for water body
+                    overflow: 'hidden', // Clip wave if it extends
+                  }}
+                  aria-hidden="true"
+                >
+                  {/* WaveSurfaceSVG is positioned at the top of this div */}
+                  <WaveSurfaceSVG />
+                </div>
+              )}
             </>
           )}
           {goalAchieved && (
@@ -147,3 +184,4 @@ export function DailyIntakeDisplay({ record, goal, viewMode }: DailyIntakeDispla
 
   return viewMode === 'imageVisualizer' ? renderImageVisualizerView() : renderProgressBarView();
 }
+

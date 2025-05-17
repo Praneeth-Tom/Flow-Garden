@@ -144,3 +144,13 @@ body {
 .day-indicator-achieved {
   @apply bg-chart-1; /* Existing color, might want to make this neutral or based on most prominent drink */
 }
+
+/* Wave animation for DailyIntakeDisplay */
+@keyframes wave {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(-100px); } /* Must match pattern width in WaveSurfaceSVG */
+}
+
+.wave-rect-animated {
+  animation: wave 2s linear infinite;
+}
