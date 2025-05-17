@@ -12,26 +12,25 @@ interface DailyIntakeDisplayProps {
 }
 
 // WaveSurfaceSVG Component for the animated wave
-// The fill for this wave should be slightly more opaque or a different shade than the main water body
+// This SVG will now represent the entire water body with a wave texture.
 const WaveSurfaceSVG = () => (
   <svg
     width="100%"
-    height="20px" // Visual height of the wave effect
-    viewBox="0 0 100 20" // Width of one wave cycle is 100, height is 20
-    preserveAspectRatio="none" // Stretch to fill width, maintain aspect ratio for height
-    style={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+    height="100%" // Changed from "20px" to fill its parent
+    viewBox="0 0 100 20" // The pattern is based on these dimensions
+    preserveAspectRatio="none" // Allows the pattern to stretch with the SVG
+    // Removed absolute positioning style, it's now a direct child
   >
     <defs>
       <pattern id="wavePattern" patternUnits="userSpaceOnUse" width="100" height="20" x="0" y="0">
         {/* Wave: starts at mid-height, crests, troughs, ends at mid-height. Fills downwards. */}
-        {/* M0,10: Start middle height. Q25,0: Crest. 50,10: Mid. T100,10: Next mid. V20 H0 Z: Fill to bottom. */}
         <path d="M0 10 Q25 0 50 10 T100 10 V20 H0 Z" fill="rgba(59, 130, 246, 0.7)" />
       </pattern>
     </defs>
     {/* Rect is wider than SVG to allow pattern to scroll continuously */}
     <rect
       width="200%" 
-      height="100%"
+      height="100%" // Fills the SVG, which in turn fills the parent div
       fill="url(#wavePattern)"
       className="wave-rect-animated" // Apply animation via CSS class
     />
@@ -136,16 +135,15 @@ export function DailyIntakeDisplay({ record, goal, viewMode }: DailyIntakeDispla
                 priority
               />
               {progressPercent > 0 && (
-                <div // Water body div
+                <div // This div now acts as a container for the full-height wave SVG
                   className="absolute bottom-0 left-0 w-full transition-all duration-500 ease-out"
                   style={{
                     height: `${progressPercent}%`,
-                    backgroundColor: 'rgba(59, 130, 246, 0.3)', // Lighter blue for water body
-                    overflow: 'hidden', // Clip wave if it extends
+                    // backgroundColor is removed, fill comes from WaveSurfaceSVG
+                    overflow: 'hidden', 
                   }}
                   aria-hidden="true"
                 >
-                  {/* WaveSurfaceSVG is positioned at the top of this div */}
                   <WaveSurfaceSVG />
                 </div>
               )}
