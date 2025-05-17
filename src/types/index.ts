@@ -42,7 +42,7 @@ export function getTotalIntake(drinks: DrinkEntry[] | undefined): number {
 }
 
 export interface UserProfile {
-  gender?: 'male' | 'female' | 'other' | '';
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say' | '';
   age?: number;
   height?: number; // cm
   weight?: number; // kg

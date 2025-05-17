@@ -29,7 +29,7 @@ import { getUserProfile, saveUserProfile } from '@/lib/storage';
 import { calculateDailyGoal, FALLBACK_GOAL_ML } from '@/lib/goalCalculator';
 
 const profileFormSchema = z.object({
-  gender: z.enum(['male', 'female', 'other', '']).optional(),
+  gender: z.enum(['male', 'female', 'other', 'prefer_not_to_say', '']).optional(),
   age: z.coerce.number().min(0).max(150).optional().or(z.literal('')),
   height: z.coerce.number().min(0).max(300).optional().or(z.literal('')), // cm
   weight: z.coerce.number().min(0).max(500).optional().or(z.literal('')), // kg
@@ -235,7 +235,7 @@ export default function HomePage() {
                               <SelectItem value="male">Male</SelectItem>
                               <SelectItem value="female">Female</SelectItem>
                               <SelectItem value="other">Other</SelectItem>
-                              <SelectItem value="">Prefer not to say</SelectItem>
+                              <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
