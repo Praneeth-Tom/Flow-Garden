@@ -1,7 +1,8 @@
 
 import type { WaterIntakeRecord, DrinkEntry } from '@/types';
-import { DRINK_TYPES, getDrinkColor, getTotalIntake } from '@/types'; // Assuming DRINK_TYPES and getDrinkColor are here
+import { DRINK_TYPES, getDrinkColor, getTotalIntake } from '@/types'; 
 import { CardDescription } from '@/components/ui/card';
+import { useMemo } from 'react';
 
 interface DailyIntakeDisplayProps {
   record: WaterIntakeRecord | undefined;
@@ -14,12 +15,22 @@ export function DailyIntakeDisplay({ record, goal }: DailyIntakeDisplayProps) {
   const currentGoal = record?.goal || goal;
   const progressPercent = currentGoal > 0 ? (totalCurrentAmount / currentGoal) * 100 : 0;
 
-  // Sort drinks for consistent order in the bar, e.g., by DRINK_TYPES order
-  const sortedDrinks = currentDrinks.slice().sort((a, b) => {
-    const indexA = DRINK_TYPES.findIndex(dt => dt.name === a.type);
-    const indexB = DRINK_TYPES.findIndex(dt => dt.name === b.type);
-    return indexA - indexB;
-  });
+  const aggregatedDrinksByType = useMemo(() => {
+    if (!currentDrinks.length) return [];
+
+    const aggregation: { [type: string]: { totalAmount: number, type: string } } = {};
+    currentDrinks.forEach(drink => {
+      if (!aggregation[drink.type]) {
+        aggregation[drink.type] = { totalAmount: 0, type: drink.type };
+      }
+      aggregation[drink.type].totalAmount += drink.amount;
+    });
+    
+    // Order according to DRINK_TYPES and filter out types not present in currentDrinks
+    return DRINK_TYPES
+      .map(dt => aggregation[dt.name])
+      .filter(Boolean) as { totalAmount: number, type: string }[];
+  }, [currentDrinks]);
 
   return (
     <div className="space-y-3">
@@ -38,17 +49,17 @@ export function DailyIntakeDisplay({ record, goal }: DailyIntakeDisplayProps) {
         aria-valuemax={currentGoal}
         aria-label={`Water intake progress: ${Math.round(progressPercent)}%`}
       >
-        {sortedDrinks.map(drink => {
-          const drinkPercentageOfGoal = currentGoal > 0 ? (drink.amount / currentGoal) * 100 : 0;
+        {aggregatedDrinksByType.map(aggDrink => {
+          const drinkPercentageOfGoal = currentGoal > 0 ? (aggDrink.totalAmount / currentGoal) * 100 : 0;
           return (
             <div
-              key={drink.type}
+              key={aggDrink.type} // Key is now unique as it's based on aggregated types
               style={{
                 width: `${drinkPercentageOfGoal}%`,
-                backgroundColor: getDrinkColor(drink.type)
+                backgroundColor: getDrinkColor(aggDrink.type)
               }}
               className="h-full transition-all duration-300 ease-in-out"
-              title={`${drink.type}: ${drink.amount}ml`}
+              title={`${aggDrink.type}: ${aggDrink.totalAmount}ml`}
             ></div>
           );
         })}

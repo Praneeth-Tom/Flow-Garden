@@ -5,6 +5,7 @@ import { Droplet, Grape, Coffee, Leaf, Milk, Wine } from 'lucide-react';
 export interface DrinkEntry {
   type: string; // e.g., 'Water', 'Juice'
   amount: number; // in milliliters
+  timestamp: number; // Unix timestamp (ms)
 }
 
 export interface WaterIntakeRecord {
@@ -39,3 +40,4 @@ export function getTotalIntake(drinks: DrinkEntry[] | undefined): number {
   if (!drinks) return 0;
   return drinks.reduce((sum, drink) => sum + drink.amount, 0);
 }
+
