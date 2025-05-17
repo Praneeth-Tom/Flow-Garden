@@ -10,8 +10,22 @@ import { DailyIntakeDisplay } from './DailyIntakeDisplay';
 import { WaterIntakeInput } from './WaterIntakeInput';
 import { DrinkLogTable } from './DrinkLogTable';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { CalendarDays, Droplet, PlusCircle, BarChart3 } from 'lucide-react';
-import { FALLBACK_GOAL_ML } from '@/lib/goalCalculator'; // Import fallback goal
+import { CalendarDays, Droplet, PlusCircle, BarChart3, Trash2 } from 'lucide-react';
+import { FALLBACK_GOAL_ML, calculateDailyGoal } from '@/lib/goalCalculator'; // Import calculateDailyGoal
+import { Button, buttonVariants } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from '@/hooks/use-toast';
+
 
 interface WaterLogProps {
   userProfile: UserProfile | null;
@@ -22,6 +36,7 @@ export function WaterLog({ userProfile, calculatedDailyGoal }: WaterLogProps) {
   const [records, setRecords] = useState<WaterIntakeRecord[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(startOfDay(new Date()));
   const [isClient, setIsClient] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true);
@@ -40,9 +55,6 @@ export function WaterLog({ userProfile, calculatedDailyGoal }: WaterLogProps) {
         timestamp: drink.timestamp || new Date(record.date).getTime() 
       }));
       
-      // Ensure existing records have a goal, if not, assign the current calculated one or fallback.
-      // This is a one-time "soft migration" for records that might not have a goal.
-      // New records will get the goal set at the time of creation.
       const goalForRecord = record.goal || calculateDailyGoal(userProfile) || FALLBACK_GOAL_ML;
 
       return {
@@ -52,7 +64,7 @@ export function WaterLog({ userProfile, calculatedDailyGoal }: WaterLogProps) {
       };
     });
     setRecords(migratedData as WaterIntakeRecord[]);
-  }, [userProfile]); // Rerun if userProfile changes to update goals of existing records without one
+  }, [userProfile]); 
 
   useEffect(() => {
     if (isClient) {
@@ -81,12 +93,9 @@ export function WaterLog({ userProfile, calculatedDailyGoal }: WaterLogProps) {
       if (existingRecordIndex > -1) {
         const updatedRecord = { ...newRecords[existingRecordIndex] };
         updatedRecord.drinks = [...(updatedRecord.drinks || []), newDrinkEntry];
-        // Goal for existing record should already be set, or was migrated.
-        // If it's somehow missing, use current calculated goal.
         updatedRecord.goal = updatedRecord.goal || calculatedDailyGoal;
         newRecords[existingRecordIndex] = updatedRecord;
       } else {
-        // For a new day's record, use the currently calculated daily goal.
         newRecords.push({
           date: dateStr,
           drinks: [newDrinkEntry],
@@ -102,8 +111,28 @@ export function WaterLog({ userProfile, calculatedDailyGoal }: WaterLogProps) {
     return records.find(r => r.date === dateStr);
   }, [records, selectedDate]);
   
-  // The goal to display is either from the record for that day, or the current calculated one.
   const displayGoal = currentDayRecord?.goal || calculatedDailyGoal;
+
+  const handleClearDayLog = useCallback(() => {
+    const dateStr = format(selectedDate, 'yyyy-MM-dd');
+    setRecords(prevRecords => {
+      return prevRecords.map(record => {
+        if (record.date === dateStr) {
+          return { ...record, drinks: [] }; // Clear drinks for the selected date
+        }
+        return record;
+      }).filter(record => record.drinks.length > 0 || record.date !== dateStr); // Optionally keep records for other days even if empty, or remove if empty and not today
+                                                                               // Current logic: keeps the record with empty drinks to preserve its goal for that day.
+                                                                               // To remove empty records:
+                                                                               // .filter(record => record.drinks.length > 0 || record.date !== dateStr)
+                                                                               // For simplicity, and to retain historical goals, we just clear the drinks array.
+    });
+    toast({
+      title: "Log Cleared",
+      description: `All entries for ${format(selectedDate, 'MMMM d, yyyy')} have been cleared.`,
+    });
+  }, [selectedDate, toast]);
+
 
   if (!isClient) {
     return (
@@ -140,7 +169,7 @@ export function WaterLog({ userProfile, calculatedDailyGoal }: WaterLogProps) {
               records={records}
               selectedDate={selectedDate}
               onDateSelect={handleDateSelect}
-              dailyGoal={calculatedDailyGoal} // Pass current overall goal for days without specific record goal
+              dailyGoal={calculatedDailyGoal} 
             />
           </CardContent>
         </Card>
@@ -173,10 +202,43 @@ export function WaterLog({ userProfile, calculatedDailyGoal }: WaterLogProps) {
 
         <Card className="shadow-lg bg-card/85 dark:bg-card/75 backdrop-blur-md">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl">
-              <BarChart3 className="mr-2 h-5 w-5 text-primary" />
-              Daily Log
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center text-xl">
+                <BarChart3 className="mr-2 h-5 w-5 text-primary" />
+                Daily Log
+              </CardTitle>
+              {currentDayRecord && currentDayRecord.drinks && currentDayRecord.drinks.length > 0 && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-sm text-destructive hover:text-destructive-foreground hover:bg-destructive/90 border-destructive/50 hover:border-destructive"
+                      aria-label={`Clear log for ${format(selectedDate, 'MMMM d, yyyy')}`}
+                    >
+                      <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Clear Log
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action will permanently delete all drink entries for {format(selectedDate, 'MMMM d, yyyy')}. This cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={handleClearDayLog}
+                        className={buttonVariants({ variant: "destructive" })}
+                      >
+                        Confirm Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
             <CardDescription>Detailed breakdown of drinks consumed on selected day.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -187,3 +249,4 @@ export function WaterLog({ userProfile, calculatedDailyGoal }: WaterLogProps) {
     </div>
   );
 }
+
