@@ -18,7 +18,6 @@ interface DrinkVisualizerProps {
 
 const VISUAL_MAX_REFERENCE_AMOUNT = 500;
 
-// Existing Visuals (some will be repurposed or renamed)
 const GlassVisual = ({ fillPercent, color }: VisualProps) => (
   <svg width="60" height="90" viewBox="0 0 60 90" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true">
     <defs>
@@ -27,8 +26,8 @@ const GlassVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M12 10 H48 L44 85 H16 Z" />
       </clipPath>
     </defs>
-    {/* Pint glass outline */}
-    <path d="M12 10 H48 L44 85 H16 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
+    {/* Pint glass shape */}
+    <path d="M12 10 H48 L44 85 H16 Z" fill="#eff0f2" />
     {fillPercent > 0 && (
       <rect
         x="12" // Min x-coordinate of the path
@@ -43,15 +42,15 @@ const GlassVisual = ({ fillPercent, color }: VisualProps) => (
   </svg>
 );
 
-const CoffeeMugVisual = ({ fillPercent, color }: VisualProps) => ( // Renamed from MugVisual
+const CoffeeMugVisual = ({ fillPercent, color }: VisualProps) => ( 
   <svg width="70" height="70" viewBox="0 0 70 70" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true">
     <defs>
       <clipPath id="dynamicCoffeeMugClip">
         <rect x="5" y="10" width="45" height="45" rx="3" />
       </clipPath>
     </defs>
-    <rect x="5" y="10" width="45" height="45" rx="3" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
-    <path d="M50 20 Q60 25 60 32.5 Q60 40 50 45" stroke="currentColor" strokeWidth="1.5" fill="none" /> {/* Handle */}
+    <rect x="5" y="10" width="45" height="45" rx="3" fill="#eff0f2" />
+    <path d="M50 20 Q60 25 60 32.5 Q60 40 50 45" fill="#eff0f2" /> {/* Handle */}
     {fillPercent > 0 && (
       <rect
         x="5"
@@ -66,20 +65,19 @@ const CoffeeMugVisual = ({ fillPercent, color }: VisualProps) => ( // Renamed fr
   </svg>
 );
 
-// Updated WaterJugVisual
 const WaterJugVisual = ({ fillPercent, color }: VisualProps) => (
-  <svg width="70" height="90" viewBox="0 0 70 90" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true" data-ai-hint="water jug">
+  <svg width="70" height="90" viewBox="0 0 70 90" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true" data-ai-hint="water dispenser">
     <defs>
       <clipPath id="dynamicJugClip">
-        <path d="M30,10 H50 V15 C60,15 65,25 65,30 L65,75 C65,85 55,85 35,85 C15,85 5,85 5,75 L5,30 C5,25 10,15 30,15 Z" />
+        <path d="M25,10 H45 V15 C55,15 60,25 60,30 L60,75 C60,85 50,85 35,85 C20,85 10,85 10,75 L10,30 C10,25 15,15 25,15 Z" />
       </clipPath>
     </defs>
-    <path d="M30,10 H50 V15 C60,15 65,25 65,30 L65,75 C65,85 55,85 35,85 C15,85 5,85 5,75 L5,30 C5,25 10,15 30,15 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
+    <path d="M25,10 H45 V15 C55,15 60,25 60,30 L60,75 C60,85 50,85 35,85 C20,85 10,85 10,75 L10,30 C10,25 15,15 25,15 Z" fill="#eff0f2" />
     {fillPercent > 0 && (
       <rect
-        x="5" // x-coordinate of the body
-        y={30 + (45 * (100 - fillPercent) / 100)} // Fillable area from y=30 to y=75 (height 45)
-        width="60" // Width of the body (65-5)
+        x="10" 
+        y={30 + (45 * (100 - fillPercent) / 100)} 
+        width="50" 
         height={(45 * fillPercent) / 100}
         fill={color}
         clipPath="url(#dynamicJugClip)"
@@ -96,8 +94,8 @@ const JuiceBottleVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M15 88 L15 25 Q15 15 20 12 H30 Q35 15 35 25 L35 88 Z M18 10 H32 V5 H18 Z" /> {/* Bottle with cap */}
       </clipPath>
     </defs>
-    <path d="M15 88 L15 25 Q15 15 20 12 H30 Q35 15 35 25 L35 88 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
-    <path d="M18 10 H32 V5 H18 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" /> {/* Cap */}
+    <path d="M15 88 L15 25 Q15 15 20 12 H30 Q35 15 35 25 L35 88 Z" fill="#eff0f2" />
+    <path d="M18 10 H32 V5 H18 Z" fill="#eff0f2" /> {/* Cap */}
     {fillPercent > 0 && (
       <rect // Fill for the main body part
         x="15" // x of the main body
@@ -116,11 +114,11 @@ const MilkCartonVisual = ({ fillPercent, color }: VisualProps) => (
   <svg width="60" height="90" viewBox="0 0 60 90" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true">
     <defs>
       <clipPath id="dynamicMilkCartonClip">
-        <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z M10 20 L30 30 L50 20 M30 10 L30 30" />
+        <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z" />
       </clipPath>
     </defs>
-    <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
-    <path d="M10 20 L30 30 L50 20 M30 10 L30 30" stroke="currentColor" strokeWidth="1.5" fill="none" /> {/* Top folds */}
+    <path d="M10 85 L10 20 L30 10 L50 20 L50 85 Z" fill="#eff0f2" />
+    {/* Top folds are now part of the main path's flat fill */}
     {fillPercent > 0 && (
       <rect
         x="10"
@@ -139,12 +137,12 @@ const SmallCupVisual = ({ fillPercent, color }: VisualProps) => (
   <svg width="60" height="60" viewBox="0 0 60 60" className="mx-auto my-1 drop-shadow-sm" aria-hidden="true">
     <defs>
       <clipPath id="dynamicSmallCupClip">
-        <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z M20 25 Q20 10 30 10 Q40 10 40 25" /> {/* Cup with a slight curve at top opening */}
+        <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z M20 25 Q20 10 30 10 Q40 10 40 25" /> 
       </clipPath>
     </defs>
-    <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" /> {/* Main body */}
-    <path d="M50 35 C55 35 55 45 50 45" stroke="currentColor" strokeWidth="1.5" fill="none" /> {/* Small handle */}
-    <path d="M20 25 Q20 10 30 10 Q40 10 40 25" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" /> {/* Top opening visual illusion */}
+    <path d="M10 50 Q10 30 20 25 H40 Q50 30 50 50 Z" fill="#eff0f2" /> {/* Main body */}
+    <path d="M50 35 C55 35 55 45 50 45" fill="#eff0f2" /> {/* Small handle */}
+    <path d="M20 25 Q20 10 30 10 Q40 10 40 25" fill="#eff0f2" /> {/* Top opening visual illusion */}
 
     {fillPercent > 0 && (
       <rect
@@ -168,14 +166,14 @@ const KettleVisual = ({ fillPercent, color }: VisualProps) => (
       </clipPath>
     </defs>
     {/* Body */}
-    <path d="M15 70 A25 25 0 0 1 65 70 L60 30 A5 5 0 0 0 55 25 H25 A5 5 0 0 0 20 30 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" />
+    <path d="M15 70 A25 25 0 0 1 65 70 L60 30 A5 5 0 0 0 55 25 H25 A5 5 0 0 0 20 30 Z" fill="#eff0f2" />
     {/* Handle */}
-    <path d="M65 40 C75 35, 75 55, 65 60" stroke="currentColor" strokeWidth="1.5" fill="none" />
+    <path d="M65 40 C75 35, 75 55, 65 60" fill="#eff0f2" />
     {/* Spout */}
-    <path d="M15 35 L5 30 Q10 25 15 25" stroke="currentColor" strokeWidth="1.5" fill="none" />
+    <path d="M15 35 L5 30 Q10 25 15 25" fill="#eff0f2" />
     {/* Lid */}
-    <ellipse cx="40" cy="25" rx="16" ry="4" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.1)" />
-    <circle cx="40" cy="22" r="3" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.2)" />
+    <ellipse cx="40" cy="25" rx="16" ry="4" fill="#eff0f2" />
+    <circle cx="40" cy="22" r="3" fill="#eff0f2" />
 
     {fillPercent > 0 && (
        <rect
@@ -198,9 +196,8 @@ const BeerMugVisual = ({ fillPercent, color }: VisualProps) => (
         <path d="M15 80 L15 15 Q15 10 20 10 H50 Q55 10 55 15 L55 80 Z" />
       </clipPath>
     </defs>
-    <path d="M15 80 L15 15 Q15 10 20 10 H50 Q55 10 55 15 L55 80 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" /> {/* Mug Body */}
-    <path d="M55 25 Q65 30 65 45 Q65 60 55 65" stroke="currentColor" strokeWidth="1.5" fill="none" /> {/* Handle */}
-    {/* Optional: Foam lines if it's beer */}
+    <path d="M15 80 L15 15 Q15 10 20 10 H50 Q55 10 55 15 L55 80 Z" fill="#eff0f2" /> {/* Mug Body */}
+    <path d="M55 25 Q65 30 65 45 Q65 60 55 65" fill="#eff0f2" /> {/* Handle */}
     {fillPercent > 0 && (
       <rect
         x="15"
@@ -222,10 +219,9 @@ const CocktailGlassVisual = ({ fillPercent, color }: VisualProps) => ( // Martin
         <path d="M5 15 L35 50 L65 15 Z" /> {/* Inverted cone for martini */}
       </clipPath>
     </defs>
-    <path d="M5 15 L35 50 L65 15 Z" stroke="currentColor" strokeWidth="1.5" fill="hsla(var(--foreground), 0.05)" /> {/* Bowl */}
-    <path d="M35 50 L35 80 M20 80 H50" stroke="currentColor" strokeWidth="1.5" fill="none" /> {/* Stem and Base */}
-    {fillPercent > 0 && (
-      <polygon // Using polygon for triangular fill might be easier
+    <path d="M5 15 L35 50 L65 15 Z" fill="#eff0f2" /> {/* Bowl */}
+    <path d="M35 50 L35 80 M20 80 H50" fill="#eff0f2" /> {/* Stem and Base */}
+    {/* <polygon 
         points={`
           ${35 - (30 * fillPercent / 100)}, ${50 - (35 * fillPercent / 100)}
           ${35 + (30 * fillPercent / 100)}, ${50 - (35 * fillPercent / 100)}
@@ -233,10 +229,8 @@ const CocktailGlassVisual = ({ fillPercent, color }: VisualProps) => ( // Martin
         `}
         fill={color}
         clipPath="url(#dynamicCocktailClip)"
-        style={{ transition: 'points 0.2s ease-out' }} // Transition for points is tricky, height/y on a rect is better.
-                                                        // Reverting to rect with clip-path for consistency.
-      />
-    )}
+        style={{ transition: 'points 0.2s ease-out' }} 
+      /> */}
      {fillPercent > 0 && ( // Rect fill for Martini glass
       <rect
         x={5} // x of the clip path
@@ -291,13 +285,6 @@ export function DrinkVisualizer({ drinkType, currentAmount }: DrinkVisualizerPro
     }));
   };
   
-  // Reset variant when drinkType changes, if you want each drink to remember its own last choice, remove this.
-  // For now, let's keep it simple: it remembers. If you want it to reset to 0 on drinkType change:
-  // useEffect(() => {
-  //  setCurrentVisualVariants(prev => ({ ...prev, [drinkType]: 0 }));
-  // }, [drinkType]);
-
-
   return (
     <div className="flex flex-col items-center">
       <VisualComponent fillPercent={fillPercent} color={color} />
@@ -313,4 +300,3 @@ export function DrinkVisualizer({ drinkType, currentAmount }: DrinkVisualizerPro
     </div>
   );
 }
-
