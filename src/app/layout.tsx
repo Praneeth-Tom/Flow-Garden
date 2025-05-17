@@ -10,8 +10,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: 'Daily Drops - Water Tracker',
-  description: 'Track your daily water intake with Daily Drops.',
+  title: 'FlowGarden - Water Tracker',
+  description: 'Track your daily water intake with FlowGarden.',
 };
 
 export default function RootLayout({

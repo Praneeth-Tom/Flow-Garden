@@ -1,7 +1,7 @@
 import type { WaterIntakeRecord, UserProfile } from '@/types';
 
-const WATER_INTAKE_STORAGE_KEY = 'dailyDrops_waterIntakeData';
-const USER_PROFILE_STORAGE_KEY = 'dailyDrops_userProfile';
+const WATER_INTAKE_STORAGE_KEY = 'flowGarden_waterIntakeData'; // Updated key
+const USER_PROFILE_STORAGE_KEY = 'flowGarden_userProfile'; // Updated key
 
 export function getWaterIntakeData(): WaterIntakeRecord[] {
   if (typeof window === 'undefined') {

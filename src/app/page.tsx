@@ -63,7 +63,7 @@ export default function HomePage() {
     if (typeof window !== 'undefined' && 'Notification' in window) {
       setNotificationPermission(Notification.permission);
     }
-    const storedReminderPref = localStorage.getItem('dailyDrops_remindersEnabled');
+    const storedReminderPref = localStorage.getItem('flowGarden_remindersEnabled'); // Updated key
     if (storedReminderPref) {
       const isEnabled = JSON.parse(storedReminderPref);
       setRemindersEnabled(isEnabled);
@@ -135,7 +135,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isClient) {
-      localStorage.setItem('dailyDrops_remindersEnabled', JSON.stringify(remindersEnabled));
+      localStorage.setItem('flowGarden_remindersEnabled', JSON.stringify(remindersEnabled)); // Updated key
       if (remindersEnabled && notificationPermission === 'granted') {
         console.log("Reminder scheduling would start here if permission granted.");
       } else if (!remindersEnabled) {
@@ -163,7 +163,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Droplet className="h-8 w-8 text-primary" data-ai-hint="water drop" />
-            <h1 className="text-3xl font-semibold tracking-tight">Daily Drops</h1>
+            <h1 className="text-3xl font-semibold tracking-tight">FlowGarden</h1>
           </div>
           <div className="flex items-center space-x-2">
             <DropdownMenu>
@@ -316,7 +316,7 @@ export default function HomePage() {
       </main>
 
       <footer className="py-6 text-center text-sm text-muted-foreground border-t border-border bg-card/85 dark:bg-card/75 backdrop-blur-md">
-        <p>&copy; {new Date().getFullYear()} Daily Drops. Stay Hydrated!</p>
+        <p>&copy; {new Date().getFullYear()} FlowGarden. Stay Hydrated!</p>
       </footer>
     </div>
   );
