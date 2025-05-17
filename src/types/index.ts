@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from 'lucide-react';
-import { Droplet, Grape, Coffee, Leaf, Milk, Wine } from 'lucide-react';
+import { Droplet, Grape, Coffee, Leaf, Milk, Wine, UserCircle2, SlidersHorizontal, BarChart3 } from 'lucide-react';
 
 export interface DrinkEntry {
   type: string; // e.g., 'Water', 'Juice'
@@ -11,7 +11,7 @@ export interface DrinkEntry {
 export interface WaterIntakeRecord {
   date: string; // YYYY-MM-DD
   drinks: DrinkEntry[];
-  goal: number; // daily goal in milliliters
+  goal: number; // daily goal in milliliters for that specific day
 }
 
 export interface DrinkTypeInfo {
@@ -41,3 +41,13 @@ export function getTotalIntake(drinks: DrinkEntry[] | undefined): number {
   return drinks.reduce((sum, drink) => sum + drink.amount, 0);
 }
 
+export interface UserProfile {
+  gender?: 'male' | 'female' | 'other' | '';
+  age?: number;
+  height?: number; // cm
+  weight?: number; // kg
+  exerciseMinutes?: number; // minutes per day
+}
+
+// Header icon types for clarity, though not strictly necessary for functionality
+export { UserCircle2 as ProfileIcon, SlidersHorizontal as SettingsIcon, BarChart3 as DailyLogIcon };

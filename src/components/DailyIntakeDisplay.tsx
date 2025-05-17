@@ -6,13 +6,14 @@ import { useMemo } from 'react';
 
 interface DailyIntakeDisplayProps {
   record: WaterIntakeRecord | undefined;
-  goal: number;
+  goal: number; // This will be the specific goal for the day (from record or calculated)
 }
 
 export function DailyIntakeDisplay({ record, goal }: DailyIntakeDisplayProps) {
   const currentDrinks = record?.drinks || [];
   const totalCurrentAmount = getTotalIntake(currentDrinks);
-  const currentGoal = record?.goal || goal;
+  // Use the goal passed in, which is either record.goal or the overall calculatedDailyGoal
+  const currentGoal = goal; 
   const progressPercent = currentGoal > 0 ? (totalCurrentAmount / currentGoal) * 100 : 0;
 
   const aggregatedDrinksByType = useMemo(() => {
@@ -26,7 +27,6 @@ export function DailyIntakeDisplay({ record, goal }: DailyIntakeDisplayProps) {
       aggregation[drink.type].totalAmount += drink.amount;
     });
     
-    // Order according to DRINK_TYPES and filter out types not present in currentDrinks
     return DRINK_TYPES
       .map(dt => aggregation[dt.name])
       .filter(Boolean) as { totalAmount: number, type: string }[];
@@ -53,7 +53,7 @@ export function DailyIntakeDisplay({ record, goal }: DailyIntakeDisplayProps) {
           const drinkPercentageOfGoal = currentGoal > 0 ? (aggDrink.totalAmount / currentGoal) * 100 : 0;
           return (
             <div
-              key={aggDrink.type} // Key is now unique as it's based on aggregated types
+              key={aggDrink.type}
               style={{
                 width: `${drinkPercentageOfGoal}%`,
                 backgroundColor: getDrinkColor(aggDrink.type)
@@ -65,7 +65,7 @@ export function DailyIntakeDisplay({ record, goal }: DailyIntakeDisplayProps) {
         })}
       </div>
 
-      {totalCurrentAmount >= currentGoal && totalCurrentAmount > 0 && (
+      {totalCurrentAmount >= currentGoal && totalCurrentAmount > 0 && currentGoal > 0 && (
         <CardDescription className="text-center" style={{ color: 'hsl(var(--chart-1))' }}>
           Goal Achieved! Keep it up!
         </CardDescription>

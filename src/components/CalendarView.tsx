@@ -11,12 +11,11 @@ interface CalendarViewProps {
   records: WaterIntakeRecord[];
   selectedDate: Date;
   onDateSelect: (date: Date | undefined) => void;
-  dailyGoal: number;
+  dailyGoal: number; // This is the overall current calculated daily goal, used as fallback
 }
 
-const CustomDayContent = ({ date, displayMonth }: DayContentProps, records: WaterIntakeRecord[], dailyGoal: number) => {
+const CustomDayContent = ({ date, displayMonth }: DayContentProps, records: WaterIntakeRecord[], overallDailyGoal: number) => {
   const dateStr = format(date, 'yyyy-MM-dd');
-  // Check if the day is outside the current display month to avoid rendering indicators on them
   if (date.getMonth() !== displayMonth.getMonth()) {
     return <>{date.getDate()}</>;
   }
@@ -26,11 +25,12 @@ const CustomDayContent = ({ date, displayMonth }: DayContentProps, records: Wate
 
   if (record) {
     const totalAmount = getTotalIntake(record.drinks);
-    const currentGoal = record.goal || dailyGoal;
-    if (totalAmount >= currentGoal) {
-      indicatorClass = 'day-indicator-achieved'; // Greenish
+    // Use the goal stored in the record for that specific day, or fallback to the overallDailyGoal
+    const currentGoal = record.goal || overallDailyGoal; 
+    if (totalAmount >= currentGoal && currentGoal > 0) {
+      indicatorClass = 'day-indicator-achieved';
     } else if (totalAmount > 0) {
-      indicatorClass = 'day-indicator-partial'; // Bluish
+      indicatorClass = 'day-indicator-partial';
     }
   }
 
@@ -59,16 +59,10 @@ export function CalendarView({ records, selectedDate, onDateSelect, dailyGoal }:
       selected={selectedDate}
       onSelect={onDateSelect}
       className="rounded-md"
-      month={selectedDate} // Control the displayed month
-      onMonthChange={(month) => onDateSelect(new Date(month.getFullYear(), month.getMonth(), selectedDate.getDate()))} // Keep day when month changes
+      month={selectedDate}
+      onMonthChange={(month) => onDateSelect(new Date(month.getFullYear(), month.getMonth(), selectedDate.getDate()))}
       components={{
         DayContent: renderDayContent
-      }}
-      modifiers={{
-        // Future: add custom modifiers for styling achieved/partial days if needed beyond dots
-      }}
-      modifiersClassNames={{
-        // Future: map modifiers to CSS classes
       }}
       ISOWeek
       showOutsideDays

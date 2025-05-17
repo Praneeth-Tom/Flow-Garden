@@ -4,24 +4,24 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { format, startOfDay } from 'date-fns';
 import { getWaterIntakeData, saveWaterIntakeData } from '@/lib/storage';
-import type { WaterIntakeRecord, DrinkEntry } from '@/types';
-// getTotalIntake is fine, no longer need DRINK_TYPES here directly
+import type { WaterIntakeRecord, DrinkEntry, UserProfile } from '@/types';
 import { CalendarView } from './CalendarView';
 import { DailyIntakeDisplay } from './DailyIntakeDisplay';
 import { WaterIntakeInput } from './WaterIntakeInput';
 import { DrinkLogTable } from './DrinkLogTable';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-// Removed Label, Switch, useToast, BellRing, SlidersHorizontal as they are moved or not used
 import { CalendarDays, Droplet, PlusCircle, BarChart3 } from 'lucide-react';
+import { FALLBACK_GOAL_ML } from '@/lib/goalCalculator'; // Import fallback goal
 
+interface WaterLogProps {
+  userProfile: UserProfile | null;
+  calculatedDailyGoal: number;
+}
 
-const DEFAULT_DAILY_GOAL_ML = 2000;
-
-export function WaterLog() {
+export function WaterLog({ userProfile, calculatedDailyGoal }: WaterLogProps) {
   const [records, setRecords] = useState<WaterIntakeRecord[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(startOfDay(new Date()));
   const [isClient, setIsClient] = useState(false);
-  // Reminder state and notification permission state are now managed in HomePage
 
   useEffect(() => {
     setIsClient(true);
@@ -39,15 +39,20 @@ export function WaterLog() {
         ...drink,
         timestamp: drink.timestamp || new Date(record.date).getTime() 
       }));
+      
+      // Ensure existing records have a goal, if not, assign the current calculated one or fallback.
+      // This is a one-time "soft migration" for records that might not have a goal.
+      // New records will get the goal set at the time of creation.
+      const goalForRecord = record.goal || calculateDailyGoal(userProfile) || FALLBACK_GOAL_ML;
+
       return {
         ...record,
         drinks: updatedDrinks,
-        goal: record.goal || DEFAULT_DAILY_GOAL_ML,
+        goal: goalForRecord,
       };
     });
     setRecords(migratedData as WaterIntakeRecord[]);
-    // Notification permission and reminder preference loading moved to HomePage
-  }, []);
+  }, [userProfile]); // Rerun if userProfile changes to update goals of existing records without one
 
   useEffect(() => {
     if (isClient) {
@@ -55,8 +60,6 @@ export function WaterLog() {
     }
   }, [records, isClient]);
   
-  // Reminder and notification permission effect moved to HomePage
-
   const handleDateSelect = useCallback((date: Date | undefined) => {
     if (date) {
       setSelectedDate(startOfDay(date));
@@ -78,23 +81,30 @@ export function WaterLog() {
       if (existingRecordIndex > -1) {
         const updatedRecord = { ...newRecords[existingRecordIndex] };
         updatedRecord.drinks = [...(updatedRecord.drinks || []), newDrinkEntry];
+        // Goal for existing record should already be set, or was migrated.
+        // If it's somehow missing, use current calculated goal.
+        updatedRecord.goal = updatedRecord.goal || calculatedDailyGoal;
         newRecords[existingRecordIndex] = updatedRecord;
       } else {
+        // For a new day's record, use the currently calculated daily goal.
         newRecords.push({
           date: dateStr,
           drinks: [newDrinkEntry],
-          goal: DEFAULT_DAILY_GOAL_ML,
+          goal: calculatedDailyGoal, 
         });
       }
       return newRecords;
     });
-  }, [selectedDate]);
+  }, [selectedDate, calculatedDailyGoal]);
 
   const currentDayRecord = useMemo(() => {
     const dateStr = format(selectedDate, 'yyyy-MM-dd');
     return records.find(r => r.date === dateStr);
   }, [records, selectedDate]);
   
+  // The goal to display is either from the record for that day, or the current calculated one.
+  const displayGoal = currentDayRecord?.goal || calculatedDailyGoal;
+
   if (!isClient) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
@@ -116,7 +126,6 @@ export function WaterLog() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
-      {/* Left Column: Calendar */}
       <div className="lg:col-span-2 space-y-6">
         <Card className="shadow-lg bg-card/85 dark:bg-card/75 backdrop-blur-md">
           <CardHeader>
@@ -131,15 +140,12 @@ export function WaterLog() {
               records={records}
               selectedDate={selectedDate}
               onDateSelect={handleDateSelect}
-              dailyGoal={DEFAULT_DAILY_GOAL_ML}
+              dailyGoal={calculatedDailyGoal} // Pass current overall goal for days without specific record goal
             />
           </CardContent>
         </Card>
-
-        {/* Settings Card Removed - Functionality moved to header dropdown */}
       </div>
 
-      {/* Right Column: Intake Display, Logging, and Log Table */}
       <div className="lg:col-span-5 space-y-6">
         <Card className="shadow-lg bg-card/85 dark:bg-card/75 backdrop-blur-md">
           <CardHeader>
@@ -149,7 +155,7 @@ export function WaterLog() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <DailyIntakeDisplay record={currentDayRecord} goal={DEFAULT_DAILY_GOAL_ML} />
+            <DailyIntakeDisplay record={currentDayRecord} goal={displayGoal} />
           </CardContent>
         </Card>
 
@@ -171,7 +177,7 @@ export function WaterLog() {
               <BarChart3 className="mr-2 h-5 w-5 text-primary" />
               Daily Log
             </CardTitle>
-            <CardDescription>Detailed breakdown of drinks consumed today.</CardDescription>
+            <CardDescription>Detailed breakdown of drinks consumed on selected day.</CardDescription>
           </CardHeader>
           <CardContent>
             <DrinkLogTable drinks={currentDayRecord?.drinks} />

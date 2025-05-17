@@ -2,8 +2,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
 import { WaterLog } from '@/components/WaterLog';
-import { Droplet, SlidersHorizontal, BarChart3, BellRing } from 'lucide-react';
+import { Droplet, SlidersHorizontal, BarChart3, BellRing, UserCircle2 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,13 +20,43 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
+import type { UserProfile } from '@/types';
+import { getUserProfile, saveUserProfile } from '@/lib/storage';
+import { calculateDailyGoal, FALLBACK_GOAL_ML } from '@/lib/goalCalculator';
+
+const profileFormSchema = z.object({
+  gender: z.enum(['male', 'female', 'other', '']).optional(),
+  age: z.coerce.number().min(0).max(150).optional().or(z.literal('')),
+  height: z.coerce.number().min(0).max(300).optional().or(z.literal('')), // cm
+  weight: z.coerce.number().min(0).max(500).optional().or(z.literal('')), // kg
+  exerciseMinutes: z.coerce.number().min(0).max(1440).optional().or(z.literal('')), // minutes per day
+});
+
+type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export default function HomePage() {
   const [isClient, setIsClient] = useState(false);
   const [remindersEnabled, setRemindersEnabled] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'default'>('default');
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [calculatedDailyGoal, setCalculatedDailyGoal] = useState<number>(FALLBACK_GOAL_ML);
+  
   const { toast } = useToast();
+
+  const profileForm = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: {
+      gender: '',
+      age: '',
+      height: '',
+      weight: '',
+      exerciseMinutes: '',
+    },
+  });
 
   useEffect(() => {
     setIsClient(true);
@@ -33,11 +67,41 @@ export default function HomePage() {
     if (storedReminderPref) {
       const isEnabled = JSON.parse(storedReminderPref);
       setRemindersEnabled(isEnabled);
-      // No automatic re-request on load here, user must interact with switch if permission is default.
     }
-  }, []);
+
+    const loadedProfile = getUserProfile();
+    if (loadedProfile) {
+      setUserProfile(loadedProfile);
+      profileForm.reset({
+        gender: loadedProfile.gender || '',
+        age: loadedProfile.age || '',
+        height: loadedProfile.height || '',
+        weight: loadedProfile.weight || '',
+        exerciseMinutes: loadedProfile.exerciseMinutes || '',
+      });
+      setCalculatedDailyGoal(calculateDailyGoal(loadedProfile));
+    } else {
+      setCalculatedDailyGoal(calculateDailyGoal(null)); // Use fallback if no profile
+    }
+  }, [profileForm]);
+
+  const handleProfileSubmit = (values: ProfileFormValues) => {
+    const updatedProfile: UserProfile = {
+      gender: values.gender || undefined,
+      age: values.age ? Number(values.age) : undefined,
+      height: values.height ? Number(values.height) : undefined,
+      weight: values.weight ? Number(values.weight) : undefined,
+      exerciseMinutes: values.exerciseMinutes ? Number(values.exerciseMinutes) : undefined,
+    };
+    saveUserProfile(updatedProfile);
+    setUserProfile(updatedProfile);
+    setCalculatedDailyGoal(calculateDailyGoal(updatedProfile));
+    toast({ title: "Profile Updated", description: "Your daily goal has been recalculated." });
+    // Note: Age and Gender are collected but not used in the current goal calculation formula.
+  };
 
   const requestNotificationPerm = async () => {
+    // ... (notification permission logic remains the same)
     if (!('Notification' in window)) {
       toast({ title: "Notifications not supported", description: "Your browser does not support desktop notifications.", variant: "destructive" });
       setRemindersEnabled(false);
@@ -45,7 +109,6 @@ export default function HomePage() {
     }
     if (Notification.permission === 'granted') {
       setNotificationPermission('granted');
-      // toast({ title: "Notifications Already Enabled", description: "You can receive reminders." }); // Optional: notify if already granted
       return true;
     }
     if (Notification.permission === 'denied') {
@@ -74,10 +137,8 @@ export default function HomePage() {
     if (isClient) {
       localStorage.setItem('dailyDrops_remindersEnabled', JSON.stringify(remindersEnabled));
       if (remindersEnabled && notificationPermission === 'granted') {
-        // Placeholder for actual reminder scheduling logic
         console.log("Reminder scheduling would start here if permission granted.");
       } else if (!remindersEnabled) {
-        // Placeholder for clearing reminder scheduling logic
         console.log("Reminder scheduling would be cleared here.");
       }
     }
@@ -89,14 +150,12 @@ export default function HomePage() {
       if (permissionGranted) {
         setRemindersEnabled(true);
       } else {
-        // If permission wasn't granted (denied or default/dismissed), ensure toggle is off
         setRemindersEnabled(false);
       }
     } else {
       setRemindersEnabled(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 text-foreground flex flex-col">
@@ -126,7 +185,7 @@ export default function HomePage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                 <ThemeToggle />
+                <ThemeToggle />
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-transparent cursor-default">
                   <div className="flex items-center justify-between w-full">
@@ -149,13 +208,110 @@ export default function HomePage() {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="User Profile" className="text-foreground/70 hover:text-foreground">
+                  <UserCircle2 className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-72 p-4">
+                <DropdownMenuLabel className="text-lg font-semibold mb-2 text-center">User Profile</DropdownMenuLabel>
+                <Form {...profileForm}>
+                  <form onSubmit={profileForm.handleSubmit(handleProfileSubmit)} className="space-y-4">
+                    <FormField
+                      control={profileForm.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Gender</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select gender" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="male">Male</SelectItem>
+                              <SelectItem value="female">Female</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                              <SelectItem value="">Prefer not to say</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={profileForm.control}
+                      name="age"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Age (Years)</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g. 30" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={profileForm.control}
+                      name="weight"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Weight (kg)</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g. 70" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={profileForm.control}
+                      name="height"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Height (cm)</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g. 175" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={profileForm.control}
+                      name="exerciseMinutes"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Daily Exercise (minutes)</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g. 30" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full">Save Profile</Button>
+                  </form>
+                </Form>
+                 <p className="text-xs text-muted-foreground mt-3 text-center">
+                    Age & Gender are collected for future enhancements and do not affect the current daily goal calculation.
+                 </p>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
       
       <main className="flex-grow p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
-          <WaterLog />
+          <WaterLog 
+            userProfile={userProfile} 
+            calculatedDailyGoal={calculatedDailyGoal}
+          />
         </div>
       </main>
 
