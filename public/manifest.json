@@ -1,4 +1,16 @@
 {
+  "name": "FlowGarden",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "short_name": "FlowGarden",
   "id": "FlowGarden_Tom",
-  "description": "A Daily Water Intake App with Fluent Design"
+  "description": "A Fluent Based Water intake app",
+  "prefer_related_applications": true,
+  "categories": [
+    "fitness",
+    "food",
+    "health",
+    "lifestyle",
+    "medical"
+  ]
 }
