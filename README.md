@@ -1,3 +1,5 @@
+Water Intake Tracking App in Fluent Design
+
 # Firebase Studio
 
 This is a NextJS starter in Firebase Studio.
