@@ -1,4 +1,4 @@
-Water Intake Tracking App in Fluent Design
+Water Intake Tracking App in Fluent Design for windows 11
 
 # Firebase Studio
 
